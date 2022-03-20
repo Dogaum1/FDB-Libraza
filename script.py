@@ -92,10 +92,14 @@ class SQL:
     @staticmethod
     def convert(value):
         CONVERSION_TABLE = {
-            "pk" : "PRIMARY KEY",
-            "notNull": "NOT NULL",
-            "varchar" : "VARCHAR",
-            "int" : "INTEGER",
+            "pk"        : "PRIMARY KEY",
+            "fk"        : "FOREIGN KEY",
+            "notNull"   : "NOT NULL",
+            "varchar"   : "VARCHAR",
+            "int"       : "INTEGER",
+            "boolean"   : "BOOLEAN",
+            "date"      : "DATE",
+            "dateTime"  :"DATETIME"
         }
         try:
             return CONVERSION_TABLE.get(value, "Erro")
