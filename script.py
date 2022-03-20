@@ -8,9 +8,10 @@ class SqlForge:
         self.prepare()
         self.getAtributes()
         self.forge()
-        
+
     # Separa o titulo da tabela do resto. Exemplo:
         # Titulo(atributo_1, atrubuto_2) -> (atributo_1, atrubuto_2)
+    
     def prepare(self):
         c = 0
         for letter in self.input:
@@ -18,10 +19,19 @@ class SqlForge:
                 c = c + 1
                 self.title = self.title + letter
             else:
-                self.input = l[c::]
+                self.input = self.input[c::]
                 break
 
-    # transforma os atributos em dicionarios
+    # Transforma os atributos em dicionarios, tendo o dicionario "global" e os dicionarios "locais" para os Data Types. 
+    # No caso de varchar é feito uma lista com o tipo na primeira posição e o tamanho na segunda.
+
+    # Exemplo:
+        # Autor(id:pk, nome:varchar:255)
+            # dicionario global = {'0' = {'titulo' = 'id', 'atributo1' = 'pk'}, '1' = {'titulo' = 'nome', 'atributo1' = ['varchar', '255']}}
+        
+        # Localização(id:pk, estante:int, prateleira:int)
+             # dicionario global = {'0' = {'titulo' = 'id', 'atributo1' = 'pk'}, '1' = {'titulo' = 'estante', 'atributo1' = 'int'}, '2' =  {'titulo' = 'prateleira', 'atributo1' = 'int'} }
+
     def getAtributes(self):
         attributeList = self.input
         
@@ -33,7 +43,6 @@ class SqlForge:
         attributeInformation = {}
 
         for attribute in attributeList:
-            
             attribute  = attribute.split(':')
             attributeInformation["title"] = attribute[0]
             
@@ -60,8 +69,6 @@ class SqlForge:
     def forge(self):
         obj     = sqlite3.connect('tables.db')
         cursor  = obj.cursor()
-
-        action      = ""
         start       = f"CREATE TABLE {self.title}(\n"
         midle       = ""
         final       = ");"
@@ -74,6 +81,7 @@ class SqlForge:
                 a = attributeTitle
                 a = a + f" {SQL.convert(attribute)}"
             
+            # caso seja o ultimo atributo, não adiciona a virgula
             if not i == len(self.globalAtributes)-1:
                 a = a + ',\n'
             else:
@@ -82,10 +90,7 @@ class SqlForge:
             midle = f"{midle} {a}"
             a = ""
             
-        action = f"{start}{midle}{final}"
-
-        print(action)
-        cursor.execute(action)
+        cursor.execute(f"{start}{midle}{final}")
         obj.close()
 
 class SQL:
@@ -95,11 +100,12 @@ class SQL:
             "pk"        : "PRIMARY KEY",
             "fk"        : "FOREIGN KEY",
             "notNull"   : "NOT NULL",
+            "unique"    : "UNIQUE",
             "varchar"   : "VARCHAR",
             "int"       : "INTEGER",
             "boolean"   : "BOOLEAN",
             "date"      : "DATE",
-            "dateTime"  :"DATETIME"
+            "dateTime"  : "DATETIME"
         }
         try:
             return CONVERSION_TABLE.get(value, "Erro")
@@ -109,5 +115,8 @@ class SQL:
                     return f"{CONVERSION_TABLE.get(value[0])}({value[1]})"
 
 os.system('cls')
-l = "Livro(id:pk, autor:varchar:255:notNull, titulo:varchar:255:notNull, edicao:int, editora:varchar:255, anoPublicacao:int, numPaginas:int, codBarras:varchar:255, genero:varchar:255)"
-test = SqlForge(l)
+
+with open('mer.txt', 'r', encoding='utf-8') as file:
+    for line in file.readlines():
+        if not line.isspace():
+            SqlForge(line)

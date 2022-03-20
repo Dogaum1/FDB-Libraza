@@ -1,0 +1,15 @@
+Funcionario(id:pk, matricula:int, senha:varchar:255, cpf:varchar:255:unique, nome:varchar:255, telefone:varchar:255, email:varchar:255, dataNascimento:date)
+
+Cliente(id:pk, cpf:varchar:255:unique, nome:varchar:255, telefone:varchar:255, email:varchar:255, dataNascimento:date, confiabilidade:int)
+
+Endereco(id:pk, tipo:varchar:255, logradouro:varchar:255, numero:int, bairro:varchar:255, cidade:varchar:255, cep:varchar:255, estado:varchar:255)
+
+Livro(id:pk, autor:varchar:255:notNull, titulo:varchar:255:notNull, edicao:int, editora:varchar:255, anoPublicacao:int, numPaginas:int, codBarras:varchar:255, genero:varchar:255)
+
+Autor(id:pk, nome:varchar:255)
+
+Localização(id:pk, estante:int, prateleira:int)
+
+Emprestimo(id:pk, dataInicio:date, prazoDevolucao:Date, dataDevolucao:date)
+
+Empresa(id:pk, nome:varchar:255, cnpj:varchar:255)
