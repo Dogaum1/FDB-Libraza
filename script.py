@@ -4,6 +4,12 @@ class SqlForge:
     def __init__(self, input) -> None:
         self.input      = input
         self.title      = ""
+<<<<<<< HEAD
+        self.globalAtributes  = []
+        self.prepare()
+        self.getAtributes()
+        self.forge()
+=======
         self.globalAtributes  = {}
         self.prepare()
         self.getAtributes()
@@ -11,6 +17,7 @@ class SqlForge:
 
     # Separa o titulo da tabela do resto. Exemplo:
         # Titulo(atributo_1, atrubuto_2) -> (atributo_1, atrubuto_2)
+>>>>>>> dfd388df2b608eb0ea135d7646615fbbdcdab9cc
     
     def prepare(self):
         c = 0
@@ -22,6 +29,12 @@ class SqlForge:
                 self.input = self.input[c::]
                 break
 
+<<<<<<< HEAD
+    def getAtributes(self):
+        attributeList = self.input
+        
+        exclude = ['(', ')', ' ', '\n']
+=======
     # Transforma os atributos em dicionarios, tendo o dicionario "global" e os dicionarios "locais" para os Data Types. 
     # No caso de varchar é feito uma lista com o tipo na primeira posição e o tamanho na segunda.
 
@@ -36,10 +49,25 @@ class SqlForge:
         attributeList = self.input
         
         exclude = ['(', ')', ' ']
+>>>>>>> dfd388df2b608eb0ea135d7646615fbbdcdab9cc
         for e in exclude:
             attributeList = attributeList.replace(e, '')
         
         attributeList = attributeList.split(',')
+<<<<<<< HEAD
+        attributeInformation = []
+
+        for attribute in attributeList:
+            attribute  = attribute.split(':')
+            attributeInformation.append(attribute[0])
+            
+            c = 1
+            isVarchar = False
+
+            for a in range(1, len(attribute)):
+                if attribute[a] == 'varchar':
+                    attributeInformation.append([attribute[a], attribute[a+1]])
+=======
         attributeInformation = {}
 
         for attribute in attributeList:
@@ -51,6 +79,7 @@ class SqlForge:
             for a in range(1, len(attribute)):
                 if attribute[a] == 'varchar':
                     attributeInformation[f"attribute{c}"] = [attribute[a], attribute[a+1]]
+>>>>>>> dfd388df2b608eb0ea135d7646615fbbdcdab9cc
                     a = a + 2
                     isVarchar = True
                 
@@ -60,6 +89,16 @@ class SqlForge:
                     pass
                 
                 else:
+<<<<<<< HEAD
+                    attributeInformation.append(attribute[a])
+                c = c + 1
+
+            self.globalAtributes.append(attributeInformation)
+            attributeInformation = []
+
+    def forge(self):
+        obj     = sqlite3.connect('dataBase.db')
+=======
                     attributeInformation[f"attribute{c}"] = attribute[a]
                 c = c + 1
 
@@ -68,17 +107,26 @@ class SqlForge:
 
     def forge(self):
         obj     = sqlite3.connect('tables.db')
+>>>>>>> dfd388df2b608eb0ea135d7646615fbbdcdab9cc
         cursor  = obj.cursor()
         start       = f"CREATE TABLE {self.title}(\n"
         midle       = ""
         final       = ");"
 
         for i in range(len(self.globalAtributes)):
+<<<<<<< HEAD
+            attributeTitle = self.globalAtributes[i][0] 
+            a = attributeTitle
+            
+            for o in range(1, len(self.globalAtributes[i])):
+                attribute = (self.globalAtributes[i][o])
+=======
             attributeTitle = self.globalAtributes[f"{i}"]["title"] 
             
             for o in range(1, len(self.globalAtributes[f'{i}'])):
                 attribute = (self.globalAtributes[f"{i}"][f"attribute{o}"])
                 a = attributeTitle
+>>>>>>> dfd388df2b608eb0ea135d7646615fbbdcdab9cc
                 a = a + f" {SQL.convert(attribute)}"
             
             # caso seja o ultimo atributo, não adiciona a virgula
@@ -89,13 +137,21 @@ class SqlForge:
             
             midle = f"{midle} {a}"
             a = ""
+<<<<<<< HEAD
+
+=======
             
+>>>>>>> dfd388df2b608eb0ea135d7646615fbbdcdab9cc
         cursor.execute(f"{start}{midle}{final}")
         obj.close()
 
 class SQL:
     @staticmethod
     def convert(value):
+<<<<<<< HEAD
+
+=======
+>>>>>>> dfd388df2b608eb0ea135d7646615fbbdcdab9cc
         CONVERSION_TABLE = {
             "pk"        : "PRIMARY KEY",
             "fk"        : "FOREIGN KEY",
@@ -108,6 +164,18 @@ class SQL:
             "dateTime"  : "DATETIME"
         }
         try:
+<<<<<<< HEAD
+            if type(value) is list:
+                if value[0] == "varchar":
+                    return f"{CONVERSION_TABLE.get(value[0])}({value[1]})"
+            return CONVERSION_TABLE.get(value)
+        except:
+            pass
+
+os.system('cls')
+
+with open('me.txt', 'r', encoding='utf-8') as file:
+=======
             return CONVERSION_TABLE.get(value, "Erro")
         except:
             if type(value) is list:
@@ -117,6 +185,7 @@ class SQL:
 os.system('cls')
 
 with open('mer.txt', 'r', encoding='utf-8') as file:
+>>>>>>> dfd388df2b608eb0ea135d7646615fbbdcdab9cc
     for line in file.readlines():
         if not line.isspace():
             SqlForge(line)

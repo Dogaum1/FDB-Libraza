@@ -1,0 +1,18 @@
+Address(id:int:pk, type:varchar:255, name:varchar:255, number:int, district:varchar:255, city:varchar:255, state:varchar:255, zip_code:varchar:255)
+
+Book(id:int:pk, title:varchar:255:notNull, author:varchar:255:notNull, edition:int, publisher:varchar:255, year_publication:int, num_pages:int, barcode:varchar:255, genre:varchar:255)
+
+BookAuthor(id:int:pk, name:varchar:255)
+
+Company(id:int:pk, name:varchar:255, cnpj:varchar:255)
+
+Confiability(id:int:pk, amt_allowed_books:int, amt_borrowed_books:int)
+
+Employee(id:int:pk, name:varchar:255, cpf:varchar:255:unique, phone:varchar:255, email:varchar:255, birth_date:date, registration:varchar:255, password:varchar:255)
+
+Loan(id:int:pk, start_date:date, return_period:date, return_date:date)
+
+Location(id:int:pk, stand:int, shelf:int)
+
+User(id:int:pk, name:varchar:255, cpf:varchar:255:unique, phone:varchar:255, email:varchar:255, birth_date:date)
+
