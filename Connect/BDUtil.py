@@ -10,7 +10,7 @@ class ConnectBD:
                 host='localhost',
                 user='postgres',
                 password='postgres',
-                database='dataBase',
+                database='postgres2',
             )
         return self.__connection
  

@@ -1,5 +1,5 @@
 class Address:
-    def __init__(self, id, type, name, number, district, city, state, postal_code):
+    def __init__(self, id, type, name, number, district, city, state, zip_code):
         self.id = id
         self.type = type
         self.name = name
@@ -7,7 +7,7 @@ class Address:
         self.district = district
         self.city = city
         self.state = state
-        self.zip_code = postal_code
+        self.zip_code = zip_code
 
     def getJson(self):
         return {

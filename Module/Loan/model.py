@@ -9,8 +9,8 @@ class Loan:
         
     def getJson(self):
         return {
-            'id': self.id, 
-            'user': self.user, 
+            'id': self.id,
+            'user': self.user,
             'book': self.book, 
             'start_date': self.start_date, 
             'return_period': self.return_period, 

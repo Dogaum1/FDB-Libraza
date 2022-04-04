@@ -1,9 +1,9 @@
 from Module.UniversalDao import UniversalDao
 
-class AddressDao:
+class ConfiabilityDao:
     def __init__(self, connection):
         self.connection = connection
-        self.table = 'Address'
+        self.table = 'Confiability'
     
     def getAll(self):
         return UniversalDao().getAll(self.connection.cursor(), self.table)
