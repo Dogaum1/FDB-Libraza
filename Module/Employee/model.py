@@ -11,5 +11,5 @@ class Employee():
         self.password = password
         
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()
 

@@ -5,4 +5,4 @@ class Location:
         self.shelf = shelf
     
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()

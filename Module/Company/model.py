@@ -5,4 +5,4 @@ class Company:
         self.cnpj = cnpj
         
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()

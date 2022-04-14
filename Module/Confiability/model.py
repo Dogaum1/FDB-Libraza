@@ -5,4 +5,4 @@ class Confiability:
         self.amt_borrowed_books = amt_borrowed_books
         
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()

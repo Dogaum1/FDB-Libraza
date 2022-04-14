@@ -14,4 +14,4 @@ class Book:
         self.description = description
     
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()

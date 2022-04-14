@@ -13,5 +13,5 @@ class User:
         self.confiability = confiability
     
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()
 

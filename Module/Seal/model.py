@@ -6,4 +6,4 @@ class Seal:
         self.gold = 2
     
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()

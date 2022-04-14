@@ -4,4 +4,4 @@ class Author:
         self.name = name
     
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()

@@ -8,4 +8,4 @@ class Loan:
         self.return_date = return_date
         
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()
