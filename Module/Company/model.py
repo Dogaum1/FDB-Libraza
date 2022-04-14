@@ -3,13 +3,6 @@ class Company:
         self.id = id
         self.name = name
         self.cnpj = cnpj
-
-    def getJson(self):
-        return {
-            'id': self.id, 
-            'name': self.name, 
-            'cnpj': self.cnpj  
-        }
         
     def getValues(self):
         return self.getJson().values()

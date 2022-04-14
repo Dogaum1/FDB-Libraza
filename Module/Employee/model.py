@@ -9,19 +9,6 @@ class Employee():
         self.birth_date = birth_date
         self.registration = registration
         self.password = password
-
-    def getJson(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'cpf': self.cpf,
-            'phone':self.phone,
-            'address': self.address,
-            'email':self.email,
-            'birth_date':self.birth_date,
-            'registration': self.registration,
-            'password': self.password
-        }
         
     def getValues(self):
         return self.getJson().values()

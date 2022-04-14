@@ -44,7 +44,7 @@ def renderList(dao):
         elif dao.table_name == 'User':
            pass
         
-    return render_template('list_template.html', keys = keys, exclude = exclude, objects = [object.getJson() for object in objects], table = dao.table_name.lower())
+    return render_template('list_template.html', keys = keys, exclude = exclude, objects = [object.__dict__ for object in objects], table = dao.table_name.lower())
 
 def renderDetails(dao, id):
     if dao:

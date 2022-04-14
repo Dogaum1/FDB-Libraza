@@ -12,22 +12,6 @@ class Book:
         self.location = location
         self.cover = cover
         self.description = description
-
-    def getJson(self):
-        return {
-            'id': self.id,
-            'title': self.title, 
-            'author': self.author, 
-            'edition': self.edition,
-            'publisher': self.publisher, 
-            'year_publication': self.year_publication, 
-            'num_pages': self.num_pages,
-            'bar_code': self.barcode,
-            'genre': self.genre,
-            'location': self.location,
-            'cover': self.cover,
-            'description': self.description,
-        }
     
     def getValues(self):
         return self.getJson().values()

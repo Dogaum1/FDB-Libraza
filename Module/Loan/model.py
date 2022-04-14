@@ -7,15 +7,5 @@ class Loan:
         self.return_period = return_period
         self.return_date = return_date
         
-    def getJson(self):
-        return {
-            'id': self.id,
-            'user': self.user,
-            'book': self.book, 
-            'start_date': self.start_date, 
-            'return_period': self.return_period, 
-            'return_date': self.return_date
-        }
-        
     def getValues(self):
         return self.getJson().values()

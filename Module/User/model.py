@@ -12,18 +12,6 @@ class User:
         self.birth_date = birth_date
         self.confiability = confiability
     
-    def getJson(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'cpf': self.cpf,
-            'phone':self.phone,
-            'address': self.address,
-            'email':self.email,
-            'birth_date':self.birth_date,
-            'confiability': self.confiability
-        }
-    
     def getValues(self):
         return self.getJson().values()
 

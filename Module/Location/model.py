@@ -3,13 +3,6 @@ class Location:
         self.id = id
         self.stand = stand
         self.shelf = shelf
-
-    def getJson(self):
-        return {
-            'id': self.id,
-            'stand': self.stand,
-            'shelf': self.shelf
-        }
     
     def getValues(self):
         return self.getJson().values()
