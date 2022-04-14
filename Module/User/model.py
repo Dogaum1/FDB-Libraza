@@ -23,4 +23,7 @@ class User:
             'birth_date':self.birth_date,
             'confiability': self.confiability
         }
+    
+    def getValues(self):
+        return self.getJson().values()
 

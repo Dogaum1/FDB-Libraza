@@ -12,3 +12,6 @@ class Seal:
             'silver': self.silver,
             'gold': self.gold
         }
+    
+    def getValues(self):
+        return self.getJson().values()

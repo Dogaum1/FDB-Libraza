@@ -10,3 +10,6 @@ class Company:
             'name': self.name, 
             'cnpj': self.cnpj  
         }
+        
+    def getValues(self):
+        return self.getJson().values()

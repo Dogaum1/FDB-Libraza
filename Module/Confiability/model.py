@@ -10,3 +10,6 @@ class Confiability:
             'amt_allowed_books': self.amt_allowed_books,  
             'amt_borrowed_books': self.amt_borrowed_books
         }
+        
+    def getValues(self):
+        return self.getJson().values()

@@ -1,12 +1,9 @@
 from Module.UniversalDao import UniversalDao
 
-class EmployeeDao:
+class EmployeeDao(UniversalDao):
     def __init__(self, connection):
         self.connection = connection
-        self.table = 'Employee'
-    
-    def getAll(self):
-        return UniversalDao().getAll(self.connection.cursor(), self.table)
+        self.cursor = connection.cursor()
+        self.table_name = 'Employee'
+        super()
 
-    def getOne(self, id):
-        return UniversalDao().getOne(self.connection.cursor(), self.table, id)

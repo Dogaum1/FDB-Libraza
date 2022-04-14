@@ -10,3 +10,6 @@ class Location:
             'stand': self.stand,
             'shelf': self.shelf
         }
+    
+    def getValues(self):
+        return self.getJson().values()

@@ -8,3 +8,6 @@ class Author:
             'id': self.id,
             'name': self.name
         }
+    
+    def getValues(self):
+        return self.getJson().values()

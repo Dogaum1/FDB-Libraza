@@ -16,3 +16,6 @@ class Loan:
             'return_period': self.return_period, 
             'return_date': self.return_date
         }
+        
+    def getValues(self):
+        return self.getJson().values()

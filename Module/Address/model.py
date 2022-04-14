@@ -20,3 +20,6 @@ class Address:
             'state': self.state,
             'zip_code': self.zip_code
         }
+        
+    def getValues(self):
+        return self.getJson().values()

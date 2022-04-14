@@ -1,5 +1,4 @@
-from flask import Flask
-from Connect.BDUtil import ConnectBD
+from Util.BDUtil import ConnectBD
 from Module.Address.dao import AddressDao
 from Module.Book.dao import BookDao
 from Module.Author.dao import AuthorDao

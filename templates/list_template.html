@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+
+{% block content%}
+<div class="row mb-3 mt-3 text-center">
+    <div class="col"><h1>{{title}}</h1></div>
+</div>
+<div class="container">
+    <table class="table table-bordered">
+        <tr>
+            {% for k in keys %}
+                {% if not k in exclude %}
+                    <th class ="table-black align-middle text-center">{{k}}</th>
+                {% endif %}
+            {% endfor %}
+
+            <th class ="table-black align-middle text-center">Ação</th>
+        </tr>
+        
+        {% for obj in objects %}
+            <tr class="">
+                {% for o in obj.values() %}
+                    {% if not o in exclude %}
+                        <td class="table-light align-middle text-center">{{o}}</td>
+                    {% endif %}
+                {% endfor %}
+            <td class="align-middle col-md-4 text-center">
+                <button class="btn btn-danger" >Remover</button>
+                <button class="btn btn-warning" onclick="window.location.href='http://127.0.0.1:5000/edit/{{table}}/{{obj['id']}}'">Editar</button>
+                <button class="btn btn-success" onclick="window.location.href='http://127.0.0.1:5000/show/{{table}}/{{obj['id']}}'" >Selecionar</button>
+            </td>
+        {% endfor %}
+
+        </tr>
+      
+    </table>
+</div>
+{% endblock %}

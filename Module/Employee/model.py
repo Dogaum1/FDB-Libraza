@@ -22,4 +22,7 @@ class Employee():
             'registration': self.registration,
             'password': self.password
         }
+        
+    def getValues(self):
+        return self.getJson().values()
 
