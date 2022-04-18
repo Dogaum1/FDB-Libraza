@@ -1,53 +1,71 @@
-from Module.DaoModules import *
 from flask import render_template
+from Module.DaoModules import *
 from .Translate import *
-from .Attributes import *
+from .Attributes import only_numbers, date, big_text, forbidden
 
 def getDao(path, justOne = False):
     path = path.replace('/', '')
     object_dao = []
-    exec(f"object_dao.append({path.title()}Dao(ConnectBD().getConection()))")
-    if path == 'user' or path == 'employee':
-        object_dao.append(AddressDao(ConnectBD().getConection()))
-    elif path == 'book':
-        object_dao.append(LocationDao(ConnectBD().getConection()))
-    elif path == 'loan':
-        object_dao.append(UserDao(ConnectBD().getConection()))
-        object_dao.append(BookDao(ConnectBD().getConection()))
-        
-    if justOne: return object_dao[0]
-    return object_dao
+    try:
+        exec(f"object_dao.append({path.title()}Dao(ConnectBD().getConection()))")
+    except:
+        return False      
+    return object_dao[0]
 
-def renderForm(dao, path, mode = 'Pesquisar', id = None):
-    if dao:
-        exclude = []
-        if mode == 'Cadastrar' or mode == 'Editar': exclude.append('Id')
+def renderForm(dao, mode = None, id = None, exclude = None, only_keys = False):
+    object = dao.getAll(mode = mode, only_keys = only_keys)
+    values = []
+    if mode ==  'edit':
+        object  = dao.getOne(id = id, mode = mode)
+        values  = list(dao.getOne(id = id, mode = mode).values())
         
-        if path == 'book':
-            if mode == 'Pesquisar': exclude.append('Capa')
-
-        if mode == 'Editar':
-            return render_template('edit_form_template.html', keys = [k.getKeys() for k in dao], values = [k.getOneValue(id) for k in dao], title = Translate().translate(dao[0].table_name).title(), sub_title = [Translate().translate(o.table_name).title() for o in dao], exclude = exclude, mode = mode.upper(), only_numbers = only_numbers, big_text = big_text, date = date)
-        
-        return render_template('form_template.html', keys = [k.getKeys() for k in dao], title = Translate().translate(dao[0].table_name).title(), sub_title = [Translate().translate(o.table_name).title() for o in dao], exclude = exclude, mode = mode.upper(), only_numbers = only_numbers, big_text = big_text, date = date)
+    return render_template( 'form_template.html',
+                            object        = object, 
+                            values        = values, 
+                            keys_br       = [Translate().translate(k).title() for k in dao.getAll(mode = mode, only_keys = True)],
+                            title         = Translate().translate(dao.table_name).title(), 
+                            mode          = Translate().translate(mode).title(), 
+                            only_numbers  = only_numbers, 
+                            big_text      = big_text, 
+                            date          = date, 
+                            exclude       = exclude
+                        )
 
 def renderList(dao):
-    objects = dao.getAll()
-    keys = dao.getKeys()
+    template  = 'list_template.html'
     exclude = []
-    if dao:
-        if dao.table_name.lower() == 'book':
-            exclude = ['Capa', 'Descrição']
-            for obj in objects:
-                exclude.append(obj.cover)
-                exclude.append(obj.description)
-        elif dao.table_name == 'User':
-           pass
+    if dao.table_name == 'User': 
+        template = 'user_list_template.html'
+        exclude = ['Id', 'Confiabilidade']
+    elif dao.table_name == 'Book':    
+        template = 'book_list_template.html'
         
-    return render_template('list_template.html', keys = keys, exclude = exclude, objects = [object.__dict__ for object in objects], table = dao.table_name.lower())
+    return render_template( template, 
+                            objects = dao.getAll(mode = 'list'), 
+                            keys = [Translate().translate(k).title() for k in dao.getAll(mode = 'list', only_keys = True)], 
+                            path = dao.table_name.lower(),
+                            exclude = exclude,
+                            title = Translate().translate(dao.table_name.lower())
+                        )
 
-def renderDetails(dao, id):
-    if dao:
-        title = Translate().translate(dao.table_name).title()
-        template = f"{dao.table_name.lower()}_details_template.html"
-        return render_template(template, object = dao.getOne(id), title = title)
+def renderDetails(dao, id, mode = None):
+    return render_template( f"{dao.table_name.lower()}_details_template.html", 
+                            object = dao.getOne(id = id, mode = mode), 
+                            title = Translate().translate(dao.table_name).title(),
+                            path = dao.table_name.lower(),
+                          )
+    
+def renderResult(dao, script, method = ''):
+    template  = 'list_template.html'
+    exclusive_templates = ['User', 'Book']
+    exclude = []
+    if dao.table_name in exclusive_templates: 
+        template = f'{dao.table_name.title()}_list_template.html'
+        
+    return render_template( template, 
+                            objects = dao.getSearch(script = script), 
+                            keys = [Translate().translate(k).title() for k in dao.getAll(mode = 'list', only_keys = True, script = script)], 
+                            path = dao.table_name.lower(),
+                            title = Translate().translate(dao.table_name.lower()),
+                            method = method
+                        )

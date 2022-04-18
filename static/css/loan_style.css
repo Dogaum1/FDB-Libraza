@@ -1,0 +1,39 @@
+.available-shadow {
+    text-shadow: 1px 1px 3px rgba(0, 255, 0, .5);   
+}
+
+.text-shadow {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, .9);   
+}
+
+.font-size{
+    font-size: 17px;
+}
+
+.card-shadow{
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, .5);   
+}
+
+.animation{
+    animation: .4s all ease;
+}
+
+.book1-bg{
+    background: rgb(36, 169, 224);
+    color:white;
+}
+
+.book2-bg{
+    background: rgb(252, 176, 65);
+    color:black;
+}
+
+.book3-bg{
+    background: rgb(138, 197, 63);
+    color:white;
+}
+
+.book4-bg{
+    background: rgb(158, 31, 99);
+    color: white;
+}

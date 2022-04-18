@@ -1,17 +1,16 @@
-from flask import Blueprint, redirect, url_for
+from flask import Blueprint
 from Util.Template import *
 
 show_core = Blueprint('show', __name__, url_prefix='/show')
 
 @show_core.route("/<path:path>/")
 def getAll(path):
-    if path in forbidden: return redirect(url_for('home'))
-    object_dao = getDao(path, True)
-    return renderList(object_dao)
+    dao = getDao(path)
+    if not dao or path in forbidden: return render_template('erro_404_template.html'), 404 
+    return renderList(dao = dao)
 
 @show_core.route("/<path:path>/<int:id>/")
 def getOne(path, id):
-    if path in forbidden: return redirect(url_for('home'))
-    object_dao = []
-    exec(f"object_dao.append({path.title()}Dao(ConnectBD().getConection()))")
-    return renderDetails(object_dao[0], id)
+    dao = getDao(path)
+    if not dao or path in forbidden: return render_template('erro_404_template.html'), 404  
+    return renderDetails(dao = dao, id = id, mode = 'detail')

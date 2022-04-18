@@ -1,0 +1,78 @@
+.bronze-card-bg{
+    background: linear-gradient(60deg ,
+                        rgba(191, 149, 63, .6), 
+                        rgba(137, 94, 26), 
+                        rgba(179, 135, 40, .6), 
+                        rgba(156, 122, 60),  
+                        rgba(176, 141, 87));
+    color: white;
+    background-size: 300% 300%;  
+}
+
+.silver-card-bg{
+    background: linear-gradient(60deg,
+                        rgba(222, 222, 222, 1) 10%,
+                        rgba(255, 255, 255, 1),
+                            rgba(222, 222, 222, 5),
+                        rgba(161, 161, 161, 1));
+    color: white;
+    background-size: 300% 300%;  
+}
+
+.gold-card-bg{
+    background: linear-gradient(60deg ,
+                        rgba(191, 149, 63, .6), 
+                        rgba(252, 246, 186, .6), 
+                        rgba(179, 135, 40, .6), 
+                        rgba(251, 245, 183, .6), 
+                        rgba(170, 119, 28, .6));
+    color: white;
+    background-size: 300% 300%;  
+}
+
+.animation{
+    -webkit-animation: card-bg-ani 25s ease infinite;
+    -moz-animation: card-bg-ani 25s ease infinite;
+    animation: card-bg-ani 25s ease infinite;
+}
+
+.list-card{
+    transition: all .4s ease;
+    cursor: pointer;
+}
+
+.list-card:hover{
+    transform: scale(1.15);
+}
+
+@-webkit-keyframes card-bg-ani {
+    0%{background-position:0% 97%}
+    50%{background-position:100% 4%}
+    100%{background-position:0% 97%}
+}
+@-moz-keyframes card-bg-ani {
+    0%{background-position:0% 97%}
+    50%{background-position:100% 4%}
+    100%{background-position:0% 97%}
+}
+@keyframes card-bg-ani {
+    0%{background-position:0% 97%}
+    50%{background-position:100% 4%}
+    100%{background-position:0% 97%}
+}
+
+.text-shadow {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0);   
+}
+
+.card-shadow{
+    box-shadow: 2px 3px 3px rgba(0, 0, 0, .8);   
+}
+
+.mt-m1 {
+    margin-top: -1%;    
+}
+
+.mt-m5 {
+    margin-top: -5%;    
+}

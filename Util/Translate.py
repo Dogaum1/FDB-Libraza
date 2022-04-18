@@ -47,6 +47,7 @@ class Translate:
             'password'                  :'senha',
             
             #? Empréstimo
+            'loan'                      :'Empréstimo',
             'start_date'                :'data início',
             'return_period'             :'validade',
             'return_date'               :'data de retorno',
@@ -55,7 +56,10 @@ class Translate:
             'stand'                     : 'estante',
             'shelf'                     : 'prateleira',
             
-            
+            #? Outros
+            'search'                    :'pesquisar',
+            'edit'                      :'editar',
+            'add'                       :'cadastrar',      
         }
     
     def translate(self, word):

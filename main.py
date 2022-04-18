@@ -22,4 +22,8 @@ app = create_app()
 def home():
     return render_template('home.html')
 
-app.run()
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('erro_404_template.html'), 404
+
+app.run(debug = True, use_reloader = True)

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block head %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300&display=swap" rel="stylesheet"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/loan_style.css')}}" rel="stylesheet">  
+{% endblock %}
+
+{% block content%}
+    <div class="">
+        <div class="row mb-3 mt-3 text-center">
+            <div class="col"><h1>{{title}} {{id}}</h1></div>
+        </div>
+        <div class="container">
+            <div class="row mb-3 card-shadow">
+                <div class="col col-5 bg-dark text-center">
+                    <img src="{{object['cover']}}" alt="Capa!" class="w-50"/>
+                </div>
+                <div class="col col-7">
+                    <div class="row">
+                        <div class="ms-1 font-size" style="font-family: 'Ubuntu', sans-serif;">
+                           
+                            <div class="book1-bg text-center rounded mt-3">
+                                <div class="bg-dark text-white">Livro</div>
+                                <a href="{{ url_for('show.getOne', path = 'book', id = object['book_id']) }}" class="text-decoration-none text-white text-book1"><p class="mt-2 pb-2 text-shadow">{{object['book']}}</p></a>
+                            </div>
+
+                            <div class="book2-bg text-center rounded mt-2">
+                                <div class="bg-dark text-white">Usuário</div>
+                                <a href="{{ url_for('show.getOne', path = 'user', id = object['user_id']) }}" class="text-decoration-none text-dark"><p class="mt-2 pb-2">{{object['user']}}</p></a>
+                            </div>
+
+                            <div class="row">
+                                <div class="col col-4">
+                                    <div class="book3-bg text-center rounded mt-2">
+                                        <div class="bg-dark text-white">Solicitação</div>
+                                        <p class="mt-2 pb-2 text-shadow">{{object['start_date']}}</p>
+                                    </div>
+                                </div>
+                                <div class="col col-4">
+                                    <div class="book4-bg text-center rounded mt-2">
+                                        <div class="bg-dark text-white">Devolução</div>
+                                        <p class="mt-2 pb-2 text-shadow">{{object['return_date']}}</p>
+                                    </div>
+                                </div>
+                                <div class="col col-4">
+                                    <div class="book3-bg text-center rounded mt-2">
+                                        <div class="bg-dark text-white">Validade</div>
+                                        <p class="mt-2 pb-2 text-shadow">{{object['return_period']}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <div class="row h-75 w-100">
+                                <div class="col col-3 text-center ms-1";">
+                                    <p class="text-success available-shadow">Devolvido</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col text-end">
+                            <button class="btn btn-primary">Gerar Comprovante</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

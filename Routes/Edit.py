@@ -1,9 +1,14 @@
-from flask import Blueprint, redirect, url_for
+from flask import Blueprint
 from Util.Template import *
 
 edit_core = Blueprint('edit', __name__, url_prefix='/edit')
 
 @edit_core.route("/<path:path>/<int:id>/")
 def edit(path, id):
-    if path in forbidden: return redirect(url_for('home'))
-    return renderForm(getDao(path), path, 'Editar', id)
+  dao = getDao(path)
+  if not dao or path in forbidden: return render_template('erro_404_template.html'), 404 
+  return renderForm( dao = dao, 
+                    mode = 'edit', 
+                    id = id, 
+                    exclude = ['Id']
+                  )

@@ -1,8 +1,6 @@
 from Module.UniversalDao import UniversalDao
+from Module.Book.model import Book
 
 class BookDao(UniversalDao):
     def __init__(self, connection):
-        self.connection = connection
-        self.cursor = connection.cursor()
-        self.table_name = 'Book'
-        super()
+        super(BookDao, self).__init__('Book', connection.cursor())

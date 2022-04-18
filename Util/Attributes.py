@@ -6,19 +6,45 @@ forbidden = [
 ]
 
 only_numbers = [
-    'Ano De Publicação', 
-    'Número De Paginas', 
-    'Número', 
-    'Cep', 
-    'Cnpj', 
-    'cpf', 
-    'Telefone'
+    'year_publication', 
+    'num_pages', 
+    'number', 
+    'zip_code', 
+    'cnpj', 
+    'phone'
 ]
 
 big_text = [
-    'Descrição'
+    'description'
 ]
 
 date = [
-    'Data De Nascimento'
+    'birth_date',
+    'start_date',
+    'return_date',
+    'return_period'
+]
+
+like = [
+    'name', 
+    'title', 
+    'publisher', 
+    'author', 
+    'user', 
+    'book'
+]
+
+exact = [
+    'cpf', 
+    'id', 
+    'stand', 
+    'shelf', 
+    'year_publication', 
+    'barcode', 
+    'edition', 
+    'confiability', 
+    'birth_date', 
+    'start_date', 
+    'return_date',
+    'return_period'
 ]

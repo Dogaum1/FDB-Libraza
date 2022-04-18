@@ -15,57 +15,53 @@ class UniversalDao:
         self.table_name = table_name
         self.cursor = cursor
 
-    def getAll(self):
-        object_list = []
-        script = f'SELECT * FROM "{self.table_name}"'
+    def getAll(self, mode = None, only_keys = False, script = None):
+        if not script: script = self.getAllScript(mode, only_keys)
         self.cursor.execute(script)
         query = self.cursor.fetchone()
+        object_list = []
         col_names = [d[0] for d in self.cursor.description]
+        if only_keys: return col_names
         
         while query is not None:
             mappings = dict(zip(col_names, query))
-            exec(f"object_list.append({self.table_name}(**mappings))")
+            object_list.append(mappings)
             query = self.cursor.fetchone()
         
         return object_list
+    
+    def getAllScript(self, mode = None, only_keys = False):
+        if only_keys: return self.getAllScript(mode).replace(';', '') + f' WHERE false;'
+        if type:
+            return f'SELECT * FROM "{self.table_name}_{mode}"'
+        return f'SELECT * FROM "{self.table_name}"'
 
-    def getOne(self, id):
-        script = f'SELECT * FROM "{self.table_name}" WHERE ID = {id}'
+    def getOne(self, id, mode = None):
+        script = self.getOneScript(mode, id)
         self.cursor.execute(script)
         query = self.cursor.fetchone()
         col_names = [d[0] for d in self.cursor.description]
 
         if query:
             mappings = dict(zip(col_names, query))
-            r =  []
-            exec(f"r.append({self.table_name}(**mappings))")
-            return r[0]
+            return mappings
     
-    def getKeys(self, with_id=False):
-        script = f'SELECT * FROM "{self.table_name}"'
-        self.cursor.execute(script)
-        col_names = [Translate().translate(d[0]).title() for d in self.cursor.description]
-        if with_id: return col_names
-        else:
-            return col_names
+    def getOneScript(self, type = None, id = None):
+        if type:
+            return f'SELECT * FROM "{self.table_name}_{type}" WHERE ID = {id}'
+        return f'SELECT * FROM "{self.table_name}" WHERE ID = {id}'
     
-    def getValues(self):
-        values_list = []
-        script = f'SELECT * FROM "{self.table_name}"'
+    def getSearch(self, script):
         self.cursor.execute(script)
         query = self.cursor.fetchone()
+        object_list = []
+        col_names = [d[0] for d in self.cursor.description]
         
         while query is not None:
-            mappings = list(query)
-            exec(f"values_list.append({self.table_name}(*mappings).getValues())")
-            query = self.cursor.fetchone()        
-        return values_list
-
-    def getOneValue(self, id):
-        script = f'SELECT * FROM "{self.table_name}" WHERE ID = {id}'
-        self.cursor.execute(script)
-        query = self.cursor.fetchone()
-        if query:
-            r =  []
-            exec(f"r.append({self.table_name}(*query))")
-            return list(r[0].getValues())
+            mappings = dict(zip(col_names, query))
+            object_list.append(mappings)
+            query = self.cursor.fetchone()
+        
+        print(object_list)
+        
+        return object_list

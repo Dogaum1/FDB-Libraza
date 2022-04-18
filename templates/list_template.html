@@ -9,9 +9,7 @@
     <table class="table table-bordered">
         <tr>
             {% for k in keys %}
-                {% if not k in exclude %}
-                    <th class ="table-black align-middle text-center">{{k}}</th>
-                {% endif %}
+                <th class ="table-black align-middle text-center">{{k}}</th>
             {% endfor %}
 
             <th class ="table-black align-middle text-center">Ação</th>
@@ -20,19 +18,15 @@
         {% for obj in objects %}
             <tr class="">
                 {% for o in obj.values() %}
-                    {% if not o in exclude %}
-                        <td class="table-light align-middle text-center">{{o}}</td>
-                    {% endif %}
+                        <td class="table-light align-middle text-center td-fit">{{o}}</td>
                 {% endfor %}
-            <td class="align-middle col-md-4 text-center">
-                <button class="btn btn-danger" >Remover</button>
-                <button class="btn btn-warning" onclick="window.location.href='http://127.0.0.1:5000/edit/{{table}}/{{obj['id']}}'">Editar</button>
-                <button class="btn btn-success" onclick="window.location.href='http://127.0.0.1:5000/show/{{table}}/{{obj['id']}}'" >Selecionar</button>
-            </td>
+                <td class="align-middle col-md-4 text-center" style="">
+                    <button class="btn btn-danger mt-auto" >Remover</button>
+                    <a href="{{ url_for ('edit.edit', path = path, id = obj['id']) }}"><button class="btn btn-warning mt-auto">Editar</button></a>
+                    <a href="{{ url_for ('show.getOne', path = path, id = obj['id']) }}"><button class="btn btn-success mt-auto">Selecionar</button></a>
+                </td>
         {% endfor %}
-
-        </tr>
-      
+            </tr>
     </table>
 </div>
 {% endblock %}

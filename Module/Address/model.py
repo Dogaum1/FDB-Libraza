@@ -1,8 +1,8 @@
 class Address:
-    def __init__(self, id, type, name, number, district, city, state, zip_code):
+    def __init__(self, id, type, logradouro, number, district, city, state, zip_code):
         self.id = id
         self.type = type
-        self.name = name
+        self.logradouro = logradouro
         self.number = number
         self.district = district
         self.city = city
@@ -10,4 +10,4 @@ class Address:
         self.zip_code = zip_code
         
     def getValues(self):
-        return self.getJson().values()
+        return self.__dict__.values()

@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% block mode %}{{mode}}{% endblock %}
-{% block title %}{{title}}{% endblock %}
+{% block title %}{{mode}} {{title}}{% endblock %}
 {% block font %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -9,42 +8,42 @@
 
 {% block content %}
     <div class="container position-relative">
-        <div id="form">
-            <form action="">
-                {% for key in range (keys|length) %}
-                    <h3 class="text-center mt-2">{{sub_title[key]}}</h3>
-                    {% for k in keys[key] %}
-                        {% if not k in exclude %}
-                            <div class="row mb-3 d-flex justify-content-center">
-                                <div class="col col-2 text-end ms-2">
-                                        <label class="form-label mt-2" for="{{k}}">{{k}}</label>
-                                </div>
-                                {% if k in only_numbers %}
-                                    <div class="col col-6 ms-3">
-                                        <input class="form-control" type="number" id="{{k}}_input" name="{{k}}_name" style="-webkit-appearance: none; -moz-appearance: textfield;"> 
-                                    </div>
-                                {% elif k in big_text%}
-                                    <div class="col col-6 ms-3">
-                                        <textarea class="form-control" id="{{k}}_input" name="{{k}}_name"></textarea> 
-                                    </div>
-                                {% elif k in date %}
-                                    <div class="col col-6 ms-3">
-                                        <input class="form-control" type="date" id="{{k}}_input" name="{{k}}_name""> 
-                                    </div>
-                                {% else %}
-                                    <div class="col col-6 ms-3">
-                                        <input class="form-control" type="text" id="{{k}}_input" name="{{k}}_name">
-                                    </div>
-                                {% endif %}
-                                <div class="col col-2"></div>
+        <div>
+            <div>
+                <h2 class="text-center mt-3 mb-4">{{mode|upper}} {{title|upper}}</h2>
+            </div>
+            <form method="{{method}}">
+                {% for key in range (object|length) %}
+                    {% if not keys_br[key] in exclude %}
+                        <div class="row mb-3 d-flex justify-content-center">
+                            <div class="col col-2 text-end ms-2">
+                                    <label class="form-label mt-2" for="{{object[key]}}">{{keys_br[key]}}</label>
                             </div>
-                        {% endif %}
-                    {% endfor %}
+                            {% if object[key] in only_numbers %}
+                                <div class="col col-6 ms-3">
+                                    <input class="form-control" type="number" id="{{object[key]}}_input" name="{{object[key]}}" style="-webkit-appearance: none; -moz-appearance: textfield;"  value="{{values[key]}}"> 
+                                </div>
+                            {% elif  object[key] in big_text %}
+                                <div class="col col-6 ms-3">
+                                    <textarea class="form-control" id="{{object[key]}}_input" name="{{object[key]}}">{{values[key]}}</textarea> 
+                                </div>
+                            {% elif  object[key] in date %}
+                                <div class="col col-6 ms-3">
+                                    <input class="form-control" type="date" id="{{object[key]}}_input" name="{{object[key]}}"  value="{{values[key]}}"> 
+                                </div>
+                            {% else %}
+                                <div class="col col-6 ms-3">
+                                    <input class="form-control" type="text" id="{{object[key]}}_input" name="{{object[key]}}" value="{{values[key]}}">
+                                </div>
+                            {% endif %}
+                            <div class="col col-2"></div>
+                        </div>
+                    {% endif %}
                 {% endfor %}
                 <div class="row d-flex justify-content-center">
                     <div class="col col-1"></div>
                     <div class="col col-5 text-end ms-4 mb-3">
-                        <button class="btn btn-primary" type="submit">{{mode}}</button>
+                        <button class="btn btn-primary" type="submit" value="submit">{{mode}}</button>
                     </div>
                 </div>
             </form>
