@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block content %}
+    <div>
+        <div class="text-center mt-3">
+            <h2>{{path}} {{mode}} com sucesso!</h2>
+        </div>
+        <div class="text-center mt-5">
+            <div class="row justify-content-center">
+                <table class="table">
+                    {% if update %}
+                        <tr>
+                            <th>Dado</th>
+                            <th>De</th>
+                            <th>Para</th>
+                        </tr>
+                        {% for k in keys %}
+                            {% if after_object[k] != object[k] %}
+                                <tr>
+                                    <td>{{keys_br[keys.index(k)]}}</td>
+                                    <td>{{object[k]}}</td>
+                                    <td class="text-success">{{after_object[k]}}</td>
+                                </tr>
+                            {% endif%}
+                        {% endfor %}        
+                    {% else %}
+                        <tr>
+                            <th>Dado</th>
+                            <th>Valor</th>
+                        </tr>
+                        {% for k in keys %}
+                            <tr>
+                                <td>{{keys_br[keys.index(k)]}}</td>
+                                <td class="">{{object[k]}}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

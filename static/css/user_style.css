@@ -15,7 +15,6 @@
                         rgba(255, 255, 255, 1),
                             rgba(222, 222, 222, 5),
                         rgba(161, 161, 161, 1));
-    color: white;
     background-size: 300% 300%;  
 }
 
@@ -26,7 +25,7 @@
                         rgba(179, 135, 40, .6), 
                         rgba(251, 245, 183, .6), 
                         rgba(170, 119, 28, .6));
-    color: white;
+    color: black;
     background-size: 300% 300%;  
 }
 

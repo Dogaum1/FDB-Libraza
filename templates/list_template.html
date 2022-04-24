@@ -20,7 +20,7 @@
                 {% for o in obj.values() %}
                         <td class="table-light align-middle text-center td-fit">{{o}}</td>
                 {% endfor %}
-                <td class="align-middle col-md-4 text-center" style="">
+                <td class="align-middle col-md-4 text-center">
                     <button class="btn btn-danger mt-auto" >Remover</button>
                     <a href="{{ url_for ('edit.edit', path = path, id = obj['id']) }}"><button class="btn btn-warning mt-auto">Editar</button></a>
                     <a href="{{ url_for ('show.getOne', path = path, id = obj['id']) }}"><button class="btn btn-success mt-auto">Selecionar</button></a>

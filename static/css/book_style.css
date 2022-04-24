@@ -7,7 +7,7 @@
 }
 
 .text-shadow {
-    text-shadow: 1px 1px 3px rgba(0, 0, 0);   
+    text-shadow: 1px 1px 3px black;   
 }
 
 .card-shadow{
@@ -24,4 +24,12 @@
 
 .pointer{
     cursor: pointer;
+}
+
+.available-shadow {
+    text-shadow: 1px 1px 3px rgba(0, 255, 0, .5);   
+}
+
+.card-shadow{
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, .5);   
 }

@@ -1,9 +1,9 @@
-from flask import render_template
+from flask import render_template, session
 from Module.DaoModules import *
 from .Translate import *
-from .Attributes import only_numbers, date, big_text, forbidden
+from .Attributes import *
 
-def getDao(path, justOne = False):
+def getDao(path):
     path = path.replace('/', '')
     object_dao = []
     try:
@@ -12,7 +12,7 @@ def getDao(path, justOne = False):
         return False      
     return object_dao[0]
 
-def renderForm(dao, mode = None, id = None, exclude = None, only_keys = False):
+def renderForm(dao, mode = None, id = None, exclude = None, only_keys = False, method = None, read_only = ('id')):
     object = dao.getAll(mode = mode, only_keys = only_keys)
     values = []
     if mode ==  'edit':
@@ -20,15 +20,19 @@ def renderForm(dao, mode = None, id = None, exclude = None, only_keys = False):
         values  = list(dao.getOne(id = id, mode = mode).values())
         
     return render_template( 'form_template.html',
-                            object        = object, 
                             values        = values, 
+                            keys          = [k for k in dao.getAll(mode = mode, only_keys = True)],
                             keys_br       = [Translate().translate(k).title() for k in dao.getAll(mode = mode, only_keys = True)],
-                            title         = Translate().translate(dao.table_name).title(), 
+                            title         = Translate().translate(dao.table_name).title(),
+                            path          = dao.table_name.title(), 
                             mode          = Translate().translate(mode).title(), 
-                            only_numbers  = only_numbers, 
-                            big_text      = big_text, 
+                            method        = method,
+                            exclude       = exclude,
                             date          = date, 
-                            exclude       = exclude
+                            big_text      = big_text, 
+                            only_numbers  = only_numbers,
+                            read_only     = read_only,
+                            username = session.get('user'), 
                         )
 
 def renderList(dao):
@@ -45,14 +49,17 @@ def renderList(dao):
                             keys = [Translate().translate(k).title() for k in dao.getAll(mode = 'list', only_keys = True)], 
                             path = dao.table_name.lower(),
                             exclude = exclude,
-                            title = Translate().translate(dao.table_name.lower())
+                            title = Translate().translate(dao.table_name.lower()),
+                            username = session.get('user'),
                         )
 
-def renderDetails(dao, id, mode = None):
+def renderDetails(dao, id, mode = None, invalid = False):
     return render_template( f"{dao.table_name.lower()}_details_template.html", 
                             object = dao.getOne(id = id, mode = mode), 
                             title = Translate().translate(dao.table_name).title(),
                             path = dao.table_name.lower(),
+                            username = session.get('user'),
+                            invalid = invalid
                           )
     
 def renderResult(dao, script, method = ''):
@@ -67,5 +74,19 @@ def renderResult(dao, script, method = ''):
                             keys = [Translate().translate(k).title() for k in dao.getAll(mode = 'list', only_keys = True, script = script)], 
                             path = dao.table_name.lower(),
                             title = Translate().translate(dao.table_name.lower()),
-                            method = method
+                            method = method,
+                            username = session.get('user'),
                         )
+
+def renderData(path, object, mode, after_object = None, update = False):
+    return render_template( 'data_result_template.html',
+                            path = Translate().translate(path).title(),
+                            keys_br = [Translate().translate(k).title() for k in object.keys()],
+                            keys = list(object.keys()),
+                            object = object,
+                            after_object = after_object,
+                            update = update,
+                            mode = mode,
+                            username = session.get('user'),
+                          )
+    

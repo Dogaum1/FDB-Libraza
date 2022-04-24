@@ -1,3 +1,6 @@
+from faulthandler import disable
+
+
 forbidden = [
     'confiability', 
     'address', 
@@ -9,9 +12,10 @@ only_numbers = [
     'year_publication', 
     'num_pages', 
     'number', 
-    'zip_code', 
-    'cnpj', 
-    'phone'
+    'cnpj',
+    'edition',
+    'stand',
+    'shelf'
 ]
 
 big_text = [
@@ -31,7 +35,8 @@ like = [
     'publisher', 
     'author', 
     'user', 
-    'book'
+    'book',
+    'confiability'
 ]
 
 exact = [
@@ -42,7 +47,6 @@ exact = [
     'year_publication', 
     'barcode', 
     'edition', 
-    'confiability', 
     'birth_date', 
     'start_date', 
     'return_date',

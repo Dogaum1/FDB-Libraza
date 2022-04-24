@@ -1,29 +1,58 @@
-import os
-from flask import Flask, render_template
+from flask import Flask, render_template, session, redirect, request, url_for
 from Util.Attributes import *
-from Routes.Add import add_core
-from Routes.Search import search_core
-from Routes.Edit import edit_core
-from Routes.Show import show_core
+from Util.Template import getDao
+from Routes import Add, Search, Edit, Show, Remove
+import os, secrets
 
 os.system('cls')
 
 def create_app():
     app = Flask(__name__)
-    app.register_blueprint(add_core)
-    app.register_blueprint(search_core)
-    app.register_blueprint(edit_core)
-    app.register_blueprint(show_core)
+    app.register_blueprint(Add.add_core)
+    app.register_blueprint(Search.search_core)
+    app.register_blueprint(Edit.edit_core)
+    app.register_blueprint(Show.show_core)
+    app.register_blueprint(Remove.remove_core)
+    app.register_error_handler(404, page_not_found)
+    app.register_error_handler(403,forbbidden_page)
     return app
 
-app = create_app()
-
-@app.route("/")
-def home():
-    return render_template('home.html')
-
-@app.errorhandler(404)
 def page_not_found(e):
     return render_template('erro_404_template.html'), 404
 
-app.run(debug = True, use_reloader = True)
+def forbbidden_page(e):
+    return render_template('erro_403_template.html'), 404
+
+app = create_app()
+app.secret_key = secrets.token_urlsafe(16)
+
+@app.route("/")
+def home():
+    return render_template('home.html', username = session.get('user'))
+
+@app.route("/login", methods = ['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.form['cpf'] or request.form['password']:
+            session.pop('user', None)
+            
+            dao = getDao('Employee')
+            script = f""" SELECT * FROM "Employee" WHERE cpf = '{request.form['cpf']}' and password = '{request.form['password']}' """
+            object = dao.execute(script, get_object = True)
+
+            if object:
+                if request.form['password'] == object['password']:
+                    session['user'] =  object['name']            
+                    return redirect(url_for('home'))
+            return render_template('login.html', invalid = True)
+          
+    return render_template('login.html')
+
+@app.route("/logout", methods = ['GET', 'POST'])
+def logout():
+    if session.get('user'):
+        session.pop('user', None)
+    return redirect(url_for('home'))
+
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.run(debug = True)

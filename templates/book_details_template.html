@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}
-    {{object['title']}}
-{% endblock %}
+{% block title %}{{title}}{% endblock %}
 
 {% block font %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,27 +9,47 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet"> 
+    <link href="{{url_for('static', filename='css/book_style.css')}}" rel="stylesheet">
 {% endblock %}
 
-{% block style %}
-    <style type="text/css">
 
-        .available-shadow {
-            text-shadow: 1px 1px 3px rgba(0, 255, 0, .5);   
-        }
+{% block modal %}   
 
-        .card-shadow{
-            box-shadow: 1px 1px 3px rgba(0, 0, 0, .5);   
-        }
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Remover {{object['title']}}?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Para confirmar a ação digite o codigo de barras abaixo.</p>
+                    <form id="modal-form" action=" {{ url_for('remove.remove', path = path, id = object['id']) }}" method="POST" class="form">
+                        <div class="input-group mb-3">
+                            <input type="text" name="barcode" class="form-control input_user" value="" placeholder="Codigo de Barras">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-danger" value="Submit">Remover</button>
+                        </div>
+                    </form> 
+                </div>
+            </div>
+        </div>
+    </div>
 
-    </style>
 {% endblock %}
 
 {% block content%}
     <div class="">
-        <div class="row mb-3 mt-3 text-center">
-            <div class="col"><h1>{{title}} {{id}}</h1></div>
+        <div class="row mb-1 mt-3 text-center">
+            <div class="col"><h1>{{title}}</h1></div>
         </div>
+        {% if invalid %}
+            <div class="row mt-1 mb-3 text-center justify-content-center">
+                <div class="bg-warning w-25 rounded"><p class="text-danger mt-2">Informações inválidas!</p></div>
+            </div>
+        {% endif %}
         <div class="container">
             <div class="row mb-3 card-shadow">
                 <div class="col col-5 bg-dark text-center">
@@ -48,17 +66,20 @@
                     </div>
                     <div class="row mt-5">
                         <div class="col">
-                            <div class="row h-75 w-100">
-                                <div class="col col-3 text-center ms-1";">
+                            <div class="row h-50 w-100">
+                                <div class="col col-3 text-center ms-1">
                                     <p class="text-success available-shadow">Disponível</p>
                                 </div>
-                                <div class="col col-8 text-center ms-1";">
+                                <div class="col col-8 text-center ms-1">
                                     <p>Estante: {{object['stand']}} Prateleira: {{object['shelf']}}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col text-end">
-                            <button class="btn btn-primary">Solicitar empréstimo</button>
+                            {% if username %}
+                                <button id="remove-button" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Remover</button>
+                                <a href=" {{ url_for('edit.edit', path = path, id = object['id']) }}"><button class="btn btn-warning">Editar</button></a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

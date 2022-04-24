@@ -22,30 +22,44 @@
                 <li class="nav-item dropdown d-flex">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Livro</a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('add.add', path = 'book') }}">Cadastrar</a></li>
+                        {% if username %}
+                            <li><a class="dropdown-item" href="{{ url_for('add.add', path = 'book') }}">Cadastrar</a></li>
+                        {% endif %}
                         <li><a class="dropdown-item" href="{{ url_for('search.search', path = 'book') }}">Pesquisar</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('show.getAll', path = 'book') }}">Listar</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown d-flex">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Usuário</a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('add.add', path = 'user') }}">Cadastrar</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('search.search', path = 'user') }}">Pesquisar</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('show.getAll', path = 'user') }}">Listar</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown d-flex">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Empréstimo</a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Realizar</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('search.search', path = 'loan') }}">Pesquisar</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('show.getAll', path = 'loan') }}">Listar</a></li>
-                    </ul>
-                </li>
+                {% if username %}
+                    <li class="nav-item dropdown d-flex">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Usuário</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('add.add', path = 'user') }}">Cadastrar</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('search.search', path = 'user') }}">Pesquisar</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('show.getAll', path = 'user') }}">Listar</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown d-flex">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Empréstimo</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Realizar</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('search.search', path = 'loan') }}">Pesquisar</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('show.getAll', path = 'loan') }}">Listar</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
             </div>
+            <div class="d-flex">
+                {% if username %}
+                    <a class="nav-link text-white" href="#" >{{username|title}}</a>
+                    <a class="nav-link text-danger" href="{{ url_for('logout') }}">Sair</a>
+                {% else %}
+                    <a class="nav-link text-white" href="{{ url_for('login') }}" >Entrar</a>
+                {% endif %}
+            </div>
+            
     </nav>
     <div>
+        <div id="modal" class="">{% block modal %}{% endblock %}</div>
         <div id="content" class="h-100">{% block content %}{% endblock %}</div>
     </div>
     <div class="mt-auto">

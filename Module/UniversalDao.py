@@ -11,9 +11,10 @@ from Module.User.model import User
 from Util.Translate import Translate
 
 class UniversalDao:
-    def __init__(self, table_name, cursor):
+    def __init__(self, table_name, connection = None):
         self.table_name = table_name
-        self.cursor = cursor
+        self.connection = connection
+        self.cursor = self.connection.cursor()
 
     def getAll(self, mode = None, only_keys = False, script = None):
         if not script: script = self.getAllScript(mode, only_keys)
@@ -60,8 +61,18 @@ class UniversalDao:
         while query is not None:
             mappings = dict(zip(col_names, query))
             object_list.append(mappings)
-            query = self.cursor.fetchone()
-        
-        print(object_list)
-        
+            query = self.cursor.fetchone()        
         return object_list
+    
+    def execute(self, script, get_object = False, commit = False):
+        self.cursor.execute(script)
+        if get_object: 
+            col_names = [d[0] for d in self.cursor.description]
+            try:
+                return dict(zip(col_names, self.cursor.fetchone()))
+            except:
+                return None
+        if commit: self.connection.commit()
+                    
+    def insert(self):
+        pass
