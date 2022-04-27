@@ -1,0 +1,7 @@
+.animation{
+    transition: all .4s ease;
+}
+
+.hover-green:hover{
+    color: green;
+}

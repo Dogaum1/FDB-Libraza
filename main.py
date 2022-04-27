@@ -1,7 +1,7 @@
 from flask import Flask, render_template, session, redirect, request, url_for
 from Util.Attributes import *
 from Util.Template import getDao
-from Routes import Add, Search, Edit, Show, Remove
+from Routes import Add, Search, Edit, Show, Remove, Verify
 import os, secrets
 
 os.system('cls')
@@ -13,15 +13,16 @@ def create_app():
     app.register_blueprint(Edit.edit_core)
     app.register_blueprint(Show.show_core)
     app.register_blueprint(Remove.remove_core)
+    app.register_blueprint(Verify.verify_core)
     app.register_error_handler(404, page_not_found)
     app.register_error_handler(403,forbbidden_page)
     return app
 
 def page_not_found(e):
-    return render_template('erro_404_template.html'), 404
+    return render_template('erro/erro_404_template.html'), 404
 
 def forbbidden_page(e):
-    return render_template('erro_403_template.html'), 404
+    return render_template('erro/erro_403_template.html'), 404
 
 app = create_app()
 app.secret_key = secrets.token_urlsafe(16)

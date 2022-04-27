@@ -1,0 +1,36 @@
+{% extends "base.html" %} 
+
+{% block title %}{{title|title}}{% endblock %} 
+
+{% block head %}
+<link href="{{url_for('static', filename='css/book_style.css')}}" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet" />
+{% endblock %} 
+
+{% block content %}
+<div>
+    <h2 class="text-center mt-3 mb-4">{{title|upper}}</h2>
+</div>
+<div class="" style="margin-left: 7%;">
+    <div class="row mt-3 ms-5">
+        {% for object in objects %}
+            <div class="col col-sm-2 text-center animation ms-5 p-3 card-shadow list-card mb-5">
+                <div class="row justify-content-center bg-dark">
+                    <img src="{{object['cover']}}" alt="Capa!" class="w-75 pb-3 pt-3" />
+                </div>
+                <a href="{{ url_for('show.getOne', path = path, id = object['id']) }}" class="text-decoration-none text-dark pointer">
+                    <div class="row justify-content-center mt-3">
+                        <div class="" style="font-family: 'Ubuntu', sans-serif;">
+                            {{object['title']}}<br />
+                            {{object['author']}}<br />
+                            {{object['year_publication']}}
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor%}
+    </div>
+</div>
+{% endblock %}

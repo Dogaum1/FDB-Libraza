@@ -10,7 +10,7 @@ class ConnectBD:
                 host='localhost',
                 user='postgres',
                 password='postgres',
-                database='postgres2',
+                database='libraza_database',
             )
         return self.__connection
  

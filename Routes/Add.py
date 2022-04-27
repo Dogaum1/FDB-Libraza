@@ -1,56 +1,85 @@
-from flask import Blueprint, request, redirect, abort
+from webbrowser import get
+from flask import Blueprint, request, redirect, abort, jsonify, url_for
 from Util.Template import *
 
-add_core = Blueprint('add', __name__, url_prefix='/add')
+add_core = Blueprint("add", __name__, url_prefix="/add")
 
-@add_core.route("/<path:path>", methods=['GET','POST'])
+
+@add_core.route("/loan", methods=["GET", "POST"])
+def addLoan():
+    if not session.get("user"):
+        return abort(403)
+      
+    dao = getDao("loan")
+
+    if request.method == "POST":
+        if request.form["cpf"] != "":
+            user_script = (
+                f""" SELECT * FROM "User" WHERE cpf = '{request.form['cpf']}'  """
+            )
+            user = dao.execute(user_script, get_object=True)
+            if user:
+                user = user["name"]
+            else:
+                user = ""
+        else:
+            user = ""
+
+        if request.form["barcode"]:
+            book_script = f""" SELECT * FROM "Book" WHERE barcode = '{request.form['barcode']}'  """
+            book = dao.execute(book_script, get_object=True)
+            if book:
+                book = book["title"]
+            else:
+                book = ""
+        else:
+            book = ""
+
+        return jsonify({"user": user, "book": book})
+
+    return renderLoanForm(dao)
+
+@add_core.route("/<path:path>", methods=["GET", "POST"])
 def add(path):
-    if not session.get('user'): return abort(403)
+    if not session.get("user"):
+        return abort(403)
+      
     dao = getDao(path)
-    if not dao or path in forbidden: return abort(404)
-    
-    return renderForm( dao = dao, 
-                       mode = 'add', 
-                       exclude = ['Id'],
-                       only_keys = True,
-                       method = 'POST',
-                     )
+    if not dao or path in forbidden:
+        return abort(404)
+      
+    return renderForm(
+        dao=dao,
+        mode="add",
+        exclude=["Id"],
+        method="POST",
+    )
 
-@add_core.route("insert/<path:path>", methods=['GET','POST'])
+
+@add_core.route("insert/<path:path>", methods=["GET", "POST"])
 def insert(path):
-  if not session.get('user'): return abort(403)
-  if request.method == 'POST':
- 
-    dao = getDao(path)
-    form_keys = list(request.form)
- 
-    script =  f""" SELECT {path}_insert( """    
-    for k in form_keys:
-        if request.form[k]:
-          if k in date:
-            script += f""" DATE'{request.form[k]}' """
-          elif k in only_numbers:
-            script += f""" {request.form[k]} """
-          else:
-            script += f""" CHARACTER'{request.form[k]}' """
-        if not form_keys.index(k) == len(form_keys) - 1:
-          script += ', '
+    # if path == 'loan':
+    #         return redirect(url_for('add.insertLoan'))
     
-    script += f")"
+    if not session.get("user"):
+        return abort(403)
     
-    dao.execute(script, commit = True)
-    
-    get_object_script = f""" select * from "{path.title()}_add" WHERE """
-    for k in form_keys:
-        if request.form[k]:
-            get_object_script += f""" "{k}" = '{request.form[k]}' """    
+    if request.method == "POST":
+        dao = getDao(path)
+        form_keys = list(request.form)
+        exclude = []
 
-            if not form_keys.index(k) == len(form_keys) - 1:
-                get_object_script += 'and'
-    
-    object = dao.execute(get_object_script, get_object = True)
-    
-  return renderData(path, 
-                    object, 
-                    mode = 'inserido', 
-                    username = session.get('user'),)
+        script = mountScript(form_keys, request, f""" SELECT {path}_insert( """)
+
+        object_id = dao.execute(script, get_object=True, commit=True)
+        object_id = list(object_id.values())[0]
+        
+        get_object_script = (
+            f""" select * from "{path.title()}_add" WHERE id = {object_id}"""
+        )
+        object = dao.execute(get_object_script, get_object=True)
+
+        if path == "loan":
+            exclude = ["return_date"]
+
+    return renderData(path, object, mode="inserido", exclude=exclude)

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="row mb-3 mt-3 text-center">
+    <div class="col"><h1>{{title}}</h1></div>
+</div>
+<div class="container">
+    <table class="table table-bordered">
+        <tr>
+            {% for k in keys %}
+                <th class ="table-dark align-middle text-center">{{k}}</th>
+            {% endfor %}
+            <th class ="table-dark align-middle text-center">Ação</th>
+        </tr>
+        {% for obj in objects %}
+            <tr class="">
+                {% for o in obj.values() %}
+                    {% if not o %}
+                        <td class="table-light align-middle text-center td-fit"> </td>
+                    {% else %}
+                        {% if o == 'Devolvido' %}
+                            <td class="table-dark bg-success align-middle text-center td-fit">{{o}}</td>
+                        {% elif o == 'Devolvido (atrazo)' %}
+                            <td class="table-warning align-middle text-center td-fit">{{o}}</td>
+                        {% elif o == 'Atrazado' %}
+                            <td class="table-light bg-danger align-middle text-center td-fit">{{o}}</td>
+                        {% else %}
+                            <td class="table-light align-middle text-center td-fit">{{o}}</td>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                <td class="align-middle col-md-2 text-center">
+                    <a href="{{ url_for ('show.getOne', path = path, id = obj['id']) }}"><button class="btn btn-success mt-auto">Selecionar</button></a>
+                </td>
+        {% endfor %}
+            </tr>
+    </table>
+</div>
+{% endblock %}

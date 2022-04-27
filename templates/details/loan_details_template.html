@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@300&display=swap" rel="stylesheet"> 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+<link href="{{url_for('static', filename='css/loan_style.css')}}" rel="stylesheet">  
+{% endblock %}
+
+{% block modal %}
+<div class="modal fade justify-content-center" id="return_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content text-center">
+            <div class="modal-header text-center">
+                <h5 class="modal-title" id="exampleModalLabel">Devolver?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja realizar a ação?</p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <a href=" {{url_for('edit.return_', path = path, id = object['id'])}} ">
+                        <button type="submit" class="btn btn-success" value="Submit" form="myform">
+                            Devolver
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-all" viewBox="1 0 16 16">
+                                <path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/>
+                                <path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708z"/>
+                            </svg>
+                            {{mode_br}}
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content%}
+<div class="">
+    <div class="row mb-3 mt-3 text-center">
+        <div class="col"><h1>{{title}} {{id}}</h1></div>
+    </div>
+    <div class="container">
+        <div class="row mb-3 card-shadow">
+            <div class="col col-5 bg-dark text-center">
+                <img src="{{object['cover']}}" alt="Capa!" class="w-50"/>
+            </div>
+            <div class="col col-7">
+                <div class="row">
+                    <div class="ms-1 font-size" style="font-family: 'Ubuntu', sans-serif;">
+                        <div class="book1-bg text-center rounded mt-3">
+                            <div class="bg-dark text-white">Livro</div>
+                            <a href="{{ url_for('show.getOne', path = 'book', id = object['book_id']) }}" class="text-decoration-none text-white text-book1"><p class="mt-2 pb-2 text-shadow">{{object['book']}}</p></a>
+                        </div>
+                        <div class="book2-bg text-center rounded mt-2">
+                            <div class="bg-dark text-white">Usuário</div>
+                            <a href="{{ url_for('show.getOne', path = 'user', id = object['user_id']) }}" class="text-decoration-none text-dark"><p class="mt-2 pb-2">{{object['user']}}</p></a>
+                        </div>
+                        <div class="row">
+                            <div class="col col-4">
+                                <div class="book3-bg text-center rounded mt-2">
+                                    <div class="bg-dark text-white">Solicitação</div>
+                                    <p class="mt-2 pb-2 text-shadow">{{object['start_date']}}</p>
+                                </div>
+                            </div>
+                            <div class="col col-4">
+                                <div class="book4-bg text-center rounded mt-2">
+                                    <div class="bg-dark text-white">Devolução</div>
+                                    {% if object['return_date'] %}
+                                        <p class="mt-2 pb-2 text-shadow">{{object['return_date']}}</p>
+                                    {% else %}
+                                        <p class="mt-2 pb-2"> Não devolvido</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col col-4">
+                                <div class="book3-bg text-center rounded mt-2">
+                                    <div class="bg-dark text-white">Validade</div>
+                                    <p class="mt-2 pb-2 text-shadow">{{object['return_period']}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3"></div>
+                <div class="row mt-3">
+                    <div class="col text-end">
+                        <button id="return_button" class="btn btn-primary" type="button">Devolver</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

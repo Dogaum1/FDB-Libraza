@@ -10,34 +10,38 @@ from Module.Seal.model import Seal
 from Module.User.model import User
 from Util.Translate import Translate
 
+
 class UniversalDao:
-    def __init__(self, table_name, connection = None):
+    def __init__(self, table_name, connection=None):
         self.table_name = table_name
         self.connection = connection
         self.cursor = self.connection.cursor()
 
-    def getAll(self, mode = None, only_keys = False, script = None):
-        if not script: script = self.getAllScript(mode, only_keys)
+    def getAll(self, mode=None, only_keys=False, script=None):
+        if not script:
+            script = self.getAllScript(mode, only_keys)
         self.cursor.execute(script)
         query = self.cursor.fetchone()
         object_list = []
         col_names = [d[0] for d in self.cursor.description]
-        if only_keys: return col_names
-        
+        if only_keys:
+            return col_names
+
         while query is not None:
             mappings = dict(zip(col_names, query))
             object_list.append(mappings)
             query = self.cursor.fetchone()
-        
+
         return object_list
-    
-    def getAllScript(self, mode = None, only_keys = False):
-        if only_keys: return self.getAllScript(mode).replace(';', '') + f' WHERE false;'
+
+    def getAllScript(self, mode=None, only_keys=False):
+        if only_keys:
+            return self.getAllScript(mode).replace(";", "") + f" WHERE false;"
         if type:
             return f'SELECT * FROM "{self.table_name}_{mode}"'
         return f'SELECT * FROM "{self.table_name}"'
 
-    def getOne(self, id, mode = None):
+    def getOne(self, id, mode=None):
         script = self.getOneScript(mode, id)
         self.cursor.execute(script)
         query = self.cursor.fetchone()
@@ -46,33 +50,32 @@ class UniversalDao:
         if query:
             mappings = dict(zip(col_names, query))
             return mappings
-    
-    def getOneScript(self, type = None, id = None):
+
+    def getOneScript(self, type=None, id=None):
         if type:
             return f'SELECT * FROM "{self.table_name}_{type}" WHERE ID = {id}'
         return f'SELECT * FROM "{self.table_name}" WHERE ID = {id}'
-    
+
     def getSearch(self, script):
         self.cursor.execute(script)
         query = self.cursor.fetchone()
         object_list = []
         col_names = [d[0] for d in self.cursor.description]
-        
+
         while query is not None:
             mappings = dict(zip(col_names, query))
             object_list.append(mappings)
-            query = self.cursor.fetchone()        
+            query = self.cursor.fetchone()
         return object_list
-    
-    def execute(self, script, get_object = False, commit = False):
+
+    def execute(self, script, get_object=False, commit=False):
         self.cursor.execute(script)
-        if get_object: 
+        if commit:
+            self.connection.commit()
+        if get_object:
             col_names = [d[0] for d in self.cursor.description]
             try:
                 return dict(zip(col_names, self.cursor.fetchone()))
             except:
                 return None
-        if commit: self.connection.commit()
-                    
-    def insert(self):
-        pass
+

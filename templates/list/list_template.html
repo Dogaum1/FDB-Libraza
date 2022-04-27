@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}{{title}}{% endblock %}
 
 {% block content%}
@@ -11,10 +12,8 @@
             {% for k in keys %}
                 <th class ="table-black align-middle text-center">{{k}}</th>
             {% endfor %}
-
             <th class ="table-black align-middle text-center">Ação</th>
         </tr>
-        
         {% for obj in objects %}
             <tr class="">
                 {% for o in obj.values() %}

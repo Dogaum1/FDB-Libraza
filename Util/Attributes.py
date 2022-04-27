@@ -1,6 +1,3 @@
-from faulthandler import disable
-
-
 forbidden = [
     'confiability', 
     'address', 
@@ -15,7 +12,8 @@ only_numbers = [
     'cnpj',
     'edition',
     'stand',
-    'shelf'
+    'shelf',
+    'amount',
 ]
 
 big_text = [

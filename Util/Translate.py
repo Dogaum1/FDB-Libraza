@@ -11,11 +11,12 @@ class Translate:
             'publisher'                 : 'editora',
             'year_publication'          : 'ano de publicação',
             'num_pages'                 : 'número de paginas',
-            'barcode'                   : 'codigo de barras',
+            'barcode'                   : 'ISBN',
             'genre'                     : 'genero',
             'location'                  : 'localização',
             'cover'                     : 'capa',
             'description'               : 'descrição',
+            'amount'                    : 'quantidade',
             
             #? Usuario  	
             'cpf'                       : 'CPF',
@@ -48,9 +49,9 @@ class Translate:
             
             #? Empréstimo
             'loan'                      :'Empréstimo',
-            'start_date'                :'data início',
+            'start_date'                :'início',
             'return_period'             :'validade',
-            'return_date'               :'data de retorno',
+            'return_date'               :'devolução',
             
             #? Localização
             'stand'                     : 'estante',
@@ -66,6 +67,5 @@ class Translate:
         try:
             return self.words[word.lower()]
         except:
-            print("==>> word: ", word)
             return word.title()
         
