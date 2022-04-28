@@ -2,6 +2,18 @@
     transition: all .4s ease;
 }
 
-.hover-green:hover{
+.text-red-hover-white{
+    color: white;
+}
+
+.text-red-hover-white:hover{
+    color: red;
+}
+
+.text-green-hover-white{
+    color: white;
+}
+
+.text-green-hover-white:hover{
     color: green;
 }

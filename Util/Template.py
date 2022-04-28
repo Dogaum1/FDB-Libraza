@@ -123,10 +123,7 @@ def renderDetails(dao, id, mode=None, invalid=False):
 
 
 def renderResult(dao, script, method=""):
-    template = "list/list_template.html"
-    exclusive_templates = ["User", "Book"]
-    if dao.table_name in exclusive_templates:
-        template = f"list/{dao.table_name.title()}_list_template.html"
+    template = f"list/{dao.table_name.title()}_list_template.html"
 
     return render_template(
         template,

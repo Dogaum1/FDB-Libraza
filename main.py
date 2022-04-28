@@ -1,4 +1,5 @@
 from flask import Flask, render_template, session, redirect, request, url_for
+from flask_util_js import FlaskUtilJs
 from Util.Attributes import *
 from Util.Template import getDao
 from Routes import Add, Search, Edit, Show, Remove, Verify
@@ -26,6 +27,12 @@ def forbbidden_page(e):
 
 app = create_app()
 app.secret_key = secrets.token_urlsafe(16)
+
+fujs = FlaskUtilJs(app)
+@app.context_processor
+def inject_fujs():
+    return dict(fujs=fujs)
+
 
 @app.route("/")
 def home():

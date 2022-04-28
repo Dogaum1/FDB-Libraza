@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %} Adicionar Empréstimo {% endblock %}
+{% block title %} Libraza | Realizar Empréstimo {% endblock %}
 
 {% block head %}
     <script src="{{ url_for('static', filename='js/verify.js') }}"></script>
@@ -9,7 +9,7 @@
 
 {% block alert %}
 <div class="modal fade justify-content-center" id="alert_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-circle me-2" viewBox="0 0 16 16">
@@ -21,7 +21,7 @@
             </div>
             <div class="modal-body">
                 <div id="alert_subtitle" class="text-center mb-3"></div>
-                <div id="alert_msg" class="text-start" style="margin-left: -4%;"></div>
+                <div id="alert_msg" class="text-center" style="margin-left: -4%;"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>

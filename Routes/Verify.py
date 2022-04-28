@@ -8,7 +8,7 @@ verify_core = Blueprint("verify", __name__, url_prefix="/verify")
 def verifyAddForm(path):
     if request.method == 'POST':        
         
-        title = 'Formulário inválido'
+        title = 'Erro'
         subtitle = 'Para prosseguir preencha: '
         
         msg = '<ul>'
@@ -40,10 +40,9 @@ def verifyAddForm(path):
                 erro_list = list(erro_list.values())[0]
 
                 erro_dict = {
-                    'borrow_limit': 'Quantidade maxíma de livros permitidos para emprestimo atingida pelo usuário!',
-                    'available_limit': 'O livro selecionado não está disponivel para emprestimo!',
-                    'invalid_start_date': 'Data de inicio inválida!',
-                    'invalid_return_period': 'Data de validade inválida!'
+                    'borrow_limit': 'Quantidade maxíma de livros permitidos para empréstimo atingida pelo usuário!',
+                    'available_limit': 'O livro selecionado não está disponivel para empréstimo!',
+                    'already_borrowed': 'Usuário com empréstimo ativo do livro solicitado!'
                 }
 
                 if erro_list:
@@ -73,5 +72,3 @@ def verifySearchForm(path):
             return jsonify({"title": title, "subtitle": subtitle, "msg": msg, "status": 0})
         return jsonify({"title": title, "subtitle": subtitle, "msg": msg})
     
-def validateLoan():
-    pass

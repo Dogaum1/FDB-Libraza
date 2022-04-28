@@ -18,7 +18,6 @@ def search(path):
     return renderForm(
         dao=dao,
         mode="search",
-        only_keys=True,
         exclude=exclude,
         method="GET",
         read_only=(),

@@ -2,7 +2,7 @@
 -- PostgreSQL database cluster dump
 --
 
--- Started on 2022-04-27 12:40:50
+-- Started on 2022-04-28 14:44:59
 
 SET default_transaction_read_only = off;
 
@@ -38,7 +38,7 @@ ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION
 -- Dumped from database version 14.2
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-04-27 12:40:50
+-- Started on 2022-04-28 14:44:59
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -51,63 +51,14 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2022-04-27 12:40:51
+-- Completed on 2022-04-28 14:45:00
 
 --
 -- PostgreSQL database dump complete
 --
 
 --
--- Database "postgres" dump
---
-
-\connect postgres
-
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 14.2
--- Dumped by pg_dump version 14.2
-
--- Started on 2022-04-27 12:40:51
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- TOC entry 2 (class 3079 OID 16384)
--- Name: adminpack; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
-
-
---
--- TOC entry 3304 (class 0 OID 0)
--- Dependencies: 2
--- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
-
-
--- Completed on 2022-04-27 12:40:51
-
---
--- PostgreSQL database dump complete
---
-
---
--- Database "postgres2" dump
+-- Database "libraza_database" dump
 --
 
 --
@@ -117,7 +68,7 @@ COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 -- Dumped from database version 14.2
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-04-27 12:40:51
+-- Started on 2022-04-28 14:45:00
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -131,16 +82,16 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3490 (class 1262 OID 25618)
--- Name: postgres2; Type: DATABASE; Schema: -; Owner: postgres
+-- TOC entry 3491 (class 1262 OID 25618)
+-- Name: libraza_database; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE postgres2 WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'Portuguese_Brazil.1252';
+CREATE DATABASE libraza_database WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'Portuguese_Brazil.1252';
 
 
-ALTER DATABASE postgres2 OWNER TO postgres;
+ALTER DATABASE libraza_database OWNER TO postgres;
 
-\connect postgres2
+\connect libraza_database
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -154,7 +105,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 257 (class 1255 OID 26192)
+-- TOC entry 258 (class 1255 OID 26192)
 -- Name: book_insert(character, character, integer, character, integer, integer, character, character, integer, integer, integer, character, character); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -238,27 +189,33 @@ $$;
 ALTER FUNCTION public.book_update(book_id integer, new_title character, new_author character, new_edition integer, new_publisher character, new_year_publication integer, new_num_pages integer, new_barcode character, new_genre character, new_stand integer, new_shelf integer, new_cover character, new_description character) OWNER TO postgres;
 
 --
--- TOC entry 261 (class 1255 OID 26263)
--- Name: loan_insert(character, character, character, character, date, date); Type: FUNCTION; Schema: public; Owner: postgres
+-- TOC entry 261 (class 1255 OID 26276)
+-- Name: loan_insert(character, character, character, character); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.loan_insert(in_cpf character, in_user character, in_barcode character, in_book character, in_start_date date, in_return_period date) RETURNS integer
+CREATE FUNCTION public.loan_insert(in_cpf character, in_user character, in_barcode character, in_book character) RETURNS integer
     LANGUAGE plpgsql
     AS $$
 DECLARE
     new_user_id integer;
     new_book_id integer;
     new_confiability_id integer;
+	new_confiability_label integer;
 	new_loan_id integer;
+	new_return_date date;
 BEGIN
-	SELECT "User".id, confiability FROM "User" 
+	SELECT "User".id, confiability, "Confiability".label FROM "User" 
     LEFT JOIN "Confiability" ON "User".confiability = "Confiability".id
-    WHERE cpf = in_cpf INTO new_user_id, new_confiability_id;
+    WHERE cpf = in_cpf INTO new_user_id, new_confiability_id, new_confiability_label;
 	
     SELECT id FROM "Book" WHERE barcode = in_barcode INTO new_book_id;
 	
+	IF new_confiability_label = 1 THEN new_return_Date = CURRENT_DATE + 7; END IF;
+	IF new_confiability_label = 2 THEN new_return_Date = CURRENT_DATE + 10; END IF;
+	IF new_confiability_label = 3 THEN new_return_Date = CURRENT_DATE + 14; END IF;
+	
 	INSERT INTO "Loan" ("user", book, start_date, return_period)
-    VALUES (new_user_id, new_book_id, in_start_date, in_return_period)
+    VALUES (new_user_id, new_book_id, CURRENT_DATE, new_return_Date)
 	RETURNING "Loan".id into new_loan_id;
     
     UPDATE "Confiability" SET amt_borrowed_books = amt_borrowed_books + 1 WHERE id = new_confiability_id;
@@ -270,10 +227,30 @@ END
 $$;
 
 
-ALTER FUNCTION public.loan_insert(in_cpf character, in_user character, in_barcode character, in_book character, in_start_date date, in_return_period date) OWNER TO postgres;
+ALTER FUNCTION public.loan_insert(in_cpf character, in_user character, in_barcode character, in_book character) OWNER TO postgres;
 
 --
--- TOC entry 260 (class 1255 OID 26255)
+-- TOC entry 257 (class 1255 OID 26294)
+-- Name: loan_renew_validate(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.loan_renew_validate(in_loan_id integer) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+	loan_return_period date;
+BEGIN
+	SELECT return_period from "Loan" WHERE id = in_loan_id INTO loan_return_period;
+	IF CURRENT_DATE < loan_return_period - 2 THEN RETURN FALSE; END IF;
+	RETURN TRUE;
+END
+$$;
+
+
+ALTER FUNCTION public.loan_renew_validate(in_loan_id integer) OWNER TO postgres;
+
+--
+-- TOC entry 262 (class 1255 OID 26255)
 -- Name: loan_return(integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -296,9 +273,9 @@ BEGIN
 	
 	UPDATE "Confiability" SET points = points + 5 WHERE id = confiability_id RETURNING points INTO confiability_points;
 	
-	IF confiability_points < 20 THEN new_label = 1, new_amt_allowed_books = 2; END IF;
-	IF confiability_points > 20 AND confiability_points < 50 THEN new_amt_allowed_books = 3; new_label = 2; END IF;
-	IF confiability_points > 50 THEN new_label = 3; new_amt_allowed_books = 5; END IF;
+	IF confiability_points < 20 THEN new_label = 1; new_amt_allowed_books = 2; END IF;
+	IF confiability_points >= 20 AND confiability_points < 50 THEN new_amt_allowed_books = 3; new_label = 2; END IF;
+	IF confiability_points >= 50 THEN new_label = 3; new_amt_allowed_books = 5; END IF;
 	
 	UPDATE "Confiability" 
     SET label = new_label,
@@ -334,42 +311,44 @@ $$;
 ALTER FUNCTION public.loan_update(loan_id integer, new_user character, new_book character, new_start_date date, new_return_period date, new_return_date date) OWNER TO postgres;
 
 --
--- TOC entry 259 (class 1255 OID 26251)
--- Name: loan_validate(character, character, character, character, date, date); Type: FUNCTION; Schema: public; Owner: postgres
+-- TOC entry 260 (class 1255 OID 26277)
+-- Name: loan_validate(character, character, character, character); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION public.loan_validate(in_user_cpf character, in_user_name character, in_barcode character, in_book_name character, in_start_date date, in_return_period date) RETURNS text[]
+CREATE FUNCTION public.loan_validate(in_user_cpf character, in_user_name character, in_barcode character, in_book_name character) RETURNS text[]
     LANGUAGE plpgsql
     AS $$
 DECLARE
 	result_array text[];
+    user_id integer;
+    book_id integer;
+    loan_verify integer;
 	user_amt_borrowed_books integer;
 	user_amt_allowed_books integer;
 	book_available_amount integer;
 BEGIN
 
-	SELECT "Confiability".amt_borrowed_books, amt_allowed_books
+	SELECT "User".id, "Confiability".amt_borrowed_books, amt_allowed_books
 	FROM "User"
 	LEFT JOIN "Confiability" ON "User".confiability = "Confiability".id
 	WHERE "User".cpf = in_user_cpf 
-	INTO user_amt_borrowed_books, user_amt_allowed_books;
+	INTO user_id, user_amt_borrowed_books, user_amt_allowed_books;
 	
-	SELECT available_amount from "Book" WHERE barcode = in_barcode INTO book_available_amount;
-
-	IF user_amt_borrowed_books >= user_amt_allowed_books THEN result_array = ray_append(result_array, 'borrow_limit'); END IF;
+	SELECT "Book".id, available_amount FROM "Book" WHERE barcode = in_barcode INTO book_id, book_available_amount;
+	SELECT "Loan".id FROM "Loan" WHERE "Loan".user = user_id AND "Loan".book = book_id AND "Loan".return_date IS NULL INTO loan_verify;
+    
+	IF user_amt_borrowed_books >= user_amt_allowed_books THEN result_array = array_append(result_array, 'borrow_limit'); END IF;
     IF book_available_amount <= 1 THEN result_array = array_append(result_array, 'available_limit'); END IF;
-	IF in_start_date < CURRENT_DATE THEN result_array = array_append(result_array, 'invalid_start_date'); END IF;
-	IF in_return_period <= in_start_date THEN result_array = array_append(result_array, 'invalid_return_period'); END IF;
-	
+	IF loan_verify IS NOT NULL THEN result_array = array_append(result_array, 'already_borrowed'); END IF;
 	RETURN result_array;
 END
 $$;
 
 
-ALTER FUNCTION public.loan_validate(in_user_cpf character, in_user_name character, in_barcode character, in_book_name character, in_start_date date, in_return_period date) OWNER TO postgres;
+ALTER FUNCTION public.loan_validate(in_user_cpf character, in_user_name character, in_barcode character, in_book_name character) OWNER TO postgres;
 
 --
--- TOC entry 258 (class 1255 OID 26193)
+-- TOC entry 259 (class 1255 OID 26193)
 -- Name: user_insert(character, character, character, character, date, character, character, integer, character, character, character, character); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -471,7 +450,7 @@ CREATE TABLE public."Address" (
 ALTER TABLE public."Address" OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 26091)
+-- TOC entry 228 (class 1259 OID 26091)
 -- Name: Address_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -500,7 +479,7 @@ CREATE TABLE public."Author" (
 ALTER TABLE public."Author" OWNER TO postgres;
 
 --
--- TOC entry 233 (class 1259 OID 26131)
+-- TOC entry 230 (class 1259 OID 26131)
 -- Name: Author_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -554,7 +533,7 @@ CREATE TABLE public."Location" (
 ALTER TABLE public."Location" OWNER TO postgres;
 
 --
--- TOC entry 238 (class 1259 OID 26184)
+-- TOC entry 234 (class 1259 OID 26184)
 -- Name: Book_add; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -581,7 +560,7 @@ CREATE VIEW public."Book_add" AS
 ALTER TABLE public."Book_add" OWNER TO postgres;
 
 --
--- TOC entry 228 (class 1259 OID 26068)
+-- TOC entry 226 (class 1259 OID 26068)
 -- Name: Book_detail; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -632,7 +611,7 @@ CREATE VIEW public."Book_edit" AS
 ALTER TABLE public."Book_edit" OWNER TO postgres;
 
 --
--- TOC entry 235 (class 1259 OID 26133)
+-- TOC entry 232 (class 1259 OID 26133)
 -- Name: Book_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -647,7 +626,7 @@ ALTER TABLE public."Book" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 225 (class 1259 OID 26035)
+-- TOC entry 223 (class 1259 OID 26035)
 -- Name: Book_list; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -665,7 +644,7 @@ CREATE VIEW public."Book_list" AS
 ALTER TABLE public."Book_list" OWNER TO postgres;
 
 --
--- TOC entry 227 (class 1259 OID 26063)
+-- TOC entry 225 (class 1259 OID 26063)
 -- Name: Book_search; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -708,7 +687,7 @@ ALTER TABLE public."Company" OWNER TO postgres;
 
 CREATE TABLE public."Confiability" (
     id integer NOT NULL,
-    label integer DEFAULT 0 NOT NULL,
+    label integer DEFAULT 1 NOT NULL,
     amt_allowed_books integer DEFAULT 2,
     amt_borrowed_books integer DEFAULT 0,
     points integer DEFAULT 0
@@ -718,7 +697,7 @@ CREATE TABLE public."Confiability" (
 ALTER TABLE public."Confiability" OWNER TO postgres;
 
 --
--- TOC entry 232 (class 1259 OID 26101)
+-- TOC entry 229 (class 1259 OID 26101)
 -- Name: Confiability_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -788,7 +767,7 @@ CREATE TABLE public."User" (
 ALTER TABLE public."User" OWNER TO postgres;
 
 --
--- TOC entry 237 (class 1259 OID 26154)
+-- TOC entry 238 (class 1259 OID 26270)
 -- Name: Loan_add; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -797,10 +776,7 @@ CREATE VIEW public."Loan_add" AS
     "User".cpf,
     "User".name AS "user",
     "Book".barcode,
-    "Book".title AS book,
-    "Loan".start_date,
-    "Loan".return_period,
-    "Loan".return_date
+    "Book".title AS book
    FROM ((public."Loan"
      LEFT JOIN public."User" ON (("Loan"."user" = "User".id)))
      LEFT JOIN public."Book" ON (("Loan".book = "Book".id)));
@@ -809,7 +785,7 @@ CREATE VIEW public."Loan_add" AS
 ALTER TABLE public."Loan_add" OWNER TO postgres;
 
 --
--- TOC entry 223 (class 1259 OID 26025)
+-- TOC entry 221 (class 1259 OID 26025)
 -- Name: Loan_detail; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -831,7 +807,7 @@ CREATE VIEW public."Loan_detail" AS
 ALTER TABLE public."Loan_detail" OWNER TO postgres;
 
 --
--- TOC entry 221 (class 1259 OID 25994)
+-- TOC entry 239 (class 1259 OID 26278)
 -- Name: Loan_edit; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -840,8 +816,7 @@ CREATE VIEW public."Loan_edit" AS
     "User".name AS "user",
     "Book".title AS book,
     "Loan".start_date,
-    "Loan".return_period,
-    "Loan".return_date
+    "Loan".return_period
    FROM ((public."Loan"
      LEFT JOIN public."User" ON (("Loan"."user" = "User".id)))
      LEFT JOIN public."Book" ON (("Loan".book = "Book".id)));
@@ -850,7 +825,7 @@ CREATE VIEW public."Loan_edit" AS
 ALTER TABLE public."Loan_edit" OWNER TO postgres;
 
 --
--- TOC entry 236 (class 1259 OID 26134)
+-- TOC entry 233 (class 1259 OID 26134)
 -- Name: Loan_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -865,7 +840,7 @@ ALTER TABLE public."Loan" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 239 (class 1259 OID 26220)
+-- TOC entry 235 (class 1259 OID 26220)
 -- Name: Loan_list; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -892,7 +867,7 @@ CREATE VIEW public."Loan_list" AS
 ALTER TABLE public."Loan_list" OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1259 OID 26014)
+-- TOC entry 220 (class 1259 OID 26014)
 -- Name: Loan_search; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -911,7 +886,7 @@ CREATE VIEW public."Loan_search" AS
 ALTER TABLE public."Loan_search" OWNER TO postgres;
 
 --
--- TOC entry 234 (class 1259 OID 26132)
+-- TOC entry 231 (class 1259 OID 26132)
 -- Name: Location_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -939,12 +914,13 @@ CREATE TABLE public."Seal" (
 ALTER TABLE public."Seal" OWNER TO postgres;
 
 --
--- TOC entry 229 (class 1259 OID 26084)
+-- TOC entry 237 (class 1259 OID 26266)
 -- Name: User_add; Type: VIEW; Schema: public; Owner: postgres
 --
 
 CREATE VIEW public."User_add" AS
- SELECT "User".name,
+ SELECT "User".id,
+    "User".name,
     "User".cpf,
     "User".phone,
     "User".email,
@@ -963,7 +939,7 @@ CREATE VIEW public."User_add" AS
 ALTER TABLE public."User_add" OWNER TO postgres;
 
 --
--- TOC entry 240 (class 1259 OID 26256)
+-- TOC entry 236 (class 1259 OID 26256)
 -- Name: User_detail; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -992,7 +968,7 @@ CREATE VIEW public."User_detail" AS
 ALTER TABLE public."User_detail" OWNER TO postgres;
 
 --
--- TOC entry 220 (class 1259 OID 25975)
+-- TOC entry 240 (class 1259 OID 26283)
 -- Name: User_edit; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1003,7 +979,6 @@ CREATE VIEW public."User_edit" AS
     "User".phone,
     "User".email,
     "User".birth_date,
-    "Seal".label AS confiability,
     "Address".type,
     "Address".logradouro,
     "Address".number,
@@ -1020,7 +995,7 @@ CREATE VIEW public."User_edit" AS
 ALTER TABLE public."User_edit" OWNER TO postgres;
 
 --
--- TOC entry 230 (class 1259 OID 26089)
+-- TOC entry 227 (class 1259 OID 26089)
 -- Name: User_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1036,7 +1011,7 @@ ALTER TABLE public."User" ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- TOC entry 224 (class 1259 OID 26031)
+-- TOC entry 222 (class 1259 OID 26031)
 -- Name: User_list; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1054,7 +1029,7 @@ CREATE VIEW public."User_list" AS
 ALTER TABLE public."User_list" OWNER TO postgres;
 
 --
--- TOC entry 226 (class 1259 OID 26055)
+-- TOC entry 224 (class 1259 OID 26055)
 -- Name: User_search; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1071,37 +1046,48 @@ CREATE VIEW public."User_search" AS
 ALTER TABLE public."User_search" OWNER TO postgres;
 
 --
--- TOC entry 3471 (class 0 OID 25801)
+-- TOC entry 3472 (class 0 OID 25801)
 -- Dependencies: 212
 -- Data for Name: Address; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Address" (id, type, logradouro, number, district, city, state, zip_code) FROM stdin;
+35	Avenida	Transcontinental	261	Santiago	Ji-Paraná	RO	76901-201
+36	Rua	José dos Santos Chaves	198	Brasilar	Teresina	PI	64035-445
+37	Praça	Nilson Jaime	145	Vila Abajá	Goiânia	GO	74550-510
+38	Quadra	SHIGS 712 Bloco H	737	Asa Sul	Brasília	DF	70361-758
+39	Vila	Cosme de Farias	908	Cosme de Farias	Salvador	BA	40254-200
 \.
 
 
 --
--- TOC entry 3469 (class 0 OID 25726)
+-- TOC entry 3470 (class 0 OID 25726)
 -- Dependencies: 210
 -- Data for Name: Author; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Author" (id, name) FROM stdin;
+19	Sun Tzu
+20	Inio Asano
+21	 Tito Leite
 \.
 
 
 --
--- TOC entry 3470 (class 0 OID 25731)
+-- TOC entry 3471 (class 0 OID 25731)
 -- Dependencies: 211
 -- Data for Name: Book; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Book" (id, title, author, edition, publisher, year_publication, num_pages, barcode, genre, location, cover, description, amount, available_amount) FROM stdin;
+16	A Arte da Guerra	19	1	Jardim dos Livros	2017	128	8581303897	Ação	19	https://m.media-amazon.com/images/P/B00BBFSD3O.01._SCLZZZZZZZ_SX500_.jpg	O maior tratado de guerra de todos os tempos em sua versão completa em português. “A Arte da Guerra” é sem dúvida a Bíblia da estratégia, sendo hoje utilizada amplamente no mundo dos negócios, conquistando pessoas e mercados.	5	4
+18	Dilúvio das almas	21	1	Todavia	2022	112	6556922552	 Ficção	21	https://m.media-amazon.com/images/P/B09S6X7CRZ.01._SCLZZZZZZZ_SX500_.jpg	Leonardo volta ao Nordeste, a Dilúvio das Almas, sua cidade natal, depois de muitos anos vivendo de todas as formas em São Paulo. Mas o retorno ao sertão semiárido está longe de ser idílico: a violência e a ignorância que o fizeram migrar continuam ali. Escrito num tom por vezes filosófico e desencantado, que contrasta com o extremo realismo das cenas e a secura dos diálogos, este é um romance potente sobre como pode ser difícil reinventar o próprio passado.	10	8
+17	Boa Noite Punpun	20	1	Editora JBC	2022	432	8545709617	Infantil	20	https://m.media-amazon.com/images/P/B07VCMP6Y1.01._SCLZZZZZZZ_SX500_.jpg	Punpun Onodera é um garoto normal, que vive feliz com sua família. Um dia, Aiko Tanaka é transferida para a sua escola. Foi paixão à primeira vista!! Voltando juntos para casa, ela conta que no futuro, “a Terra vai se tornar um planeta inabitável”.	7	5
 \.
 
 
 --
--- TOC entry 3475 (class 0 OID 25863)
+-- TOC entry 3476 (class 0 OID 25863)
 -- Dependencies: 216
 -- Data for Name: Company; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1111,17 +1097,22 @@ COPY public."Company" (id, name, cnpj) FROM stdin;
 
 
 --
--- TOC entry 3473 (class 0 OID 25834)
+-- TOC entry 3474 (class 0 OID 25834)
 -- Dependencies: 214
 -- Data for Name: Confiability; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Confiability" (id, label, amt_allowed_books, amt_borrowed_books, points) FROM stdin;
+33	2	3	2	25
+31	1	2	0	5
+32	1	2	0	5
+35	1	2	0	5
+34	1	2	0	5
 \.
 
 
 --
--- TOC entry 3476 (class 0 OID 25870)
+-- TOC entry 3477 (class 0 OID 25870)
 -- Dependencies: 217
 -- Data for Name: Employee; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1135,27 +1126,41 @@ COPY public."Employee" (id, name, cpf, phone, email, birth_date, registration, p
 
 
 --
--- TOC entry 3477 (class 0 OID 25879)
+-- TOC entry 3478 (class 0 OID 25879)
 -- Dependencies: 218
 -- Data for Name: Loan; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Loan" (id, "user", book, start_date, return_period, return_date) FROM stdin;
+21	21	16	2022-04-27	2022-05-02	2022-04-27
+26	23	16	2022-04-28	2022-05-05	2022-04-28
+22	22	16	2022-04-27	2022-05-10	2022-04-28
+23	23	17	2022-04-28	2022-05-05	2022-04-28
+24	25	16	2022-04-28	2022-05-05	2022-04-28
+25	24	16	2022-04-28	2022-05-05	2022-04-28
+27	23	16	2022-04-28	2022-05-05	2022-04-28
+28	23	17	2022-04-28	2022-05-05	2022-04-28
+29	23	16	2022-04-28	2022-05-08	2022-04-28
+30	23	18	2022-04-28	2022-04-30	\N
+31	23	17	2022-04-28	2022-05-08	\N
 \.
 
 
 --
--- TOC entry 3468 (class 0 OID 25709)
+-- TOC entry 3469 (class 0 OID 25709)
 -- Dependencies: 209
 -- Data for Name: Location; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Location" (id, stand, shelf) FROM stdin;
+19	1	3
+20	2	3
+21	5	4
 \.
 
 
 --
--- TOC entry 3472 (class 0 OID 25827)
+-- TOC entry 3473 (class 0 OID 25827)
 -- Dependencies: 213
 -- Data for Name: Seal; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1168,80 +1173,85 @@ COPY public."Seal" (id, label) FROM stdin;
 
 
 --
--- TOC entry 3474 (class 0 OID 25844)
+-- TOC entry 3475 (class 0 OID 25844)
 -- Dependencies: 215
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."User" (id, name, cpf, phone, address, email, birth_date, confiability) FROM stdin;
+21	Joaquim Hugo Alves	374.233.706-81	(69) 9 9497-1862	35	joaquim_alves@renatoseguros.com	1963-03-16	31
+22	Thiago José Nascimento	767.044.274-30	(86) 9 8507-2092	36	thiago.jose.nascimento@gruposimoes.com.br	1980-01-06	32
+23	Carolina Flávia Melo	433.883.631-88	(62) 9 9739-0752	37	carolinaflaviamelo@artedaserra.com.br	1948-02-11	33
+24	Sophia Lavínia Aragão	218.444.189-95	(61) 9 8831-7355	38	sophia-aragao99@diclace.com.br	2000-01-07	34
+25	Rafael Kauê Danilo da Luz	151.349.558-59	(71) 9 8961-6815	39	rafael_daluz@bemdito.com.br	1999-01-11	35
 \.
 
 
 --
--- TOC entry 3491 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 3492 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: Address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Address_id_seq"', 33, true);
-
-
---
--- TOC entry 3492 (class 0 OID 0)
--- Dependencies: 233
--- Name: Author_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public."Author_id_seq"', 18, true);
+SELECT pg_catalog.setval('public."Address_id_seq"', 39, true);
 
 
 --
 -- TOC entry 3493 (class 0 OID 0)
--- Dependencies: 235
--- Name: Book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Dependencies: 230
+-- Name: Author_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Book_id_seq"', 15, true);
+SELECT pg_catalog.setval('public."Author_id_seq"', 21, true);
 
 
 --
 -- TOC entry 3494 (class 0 OID 0)
 -- Dependencies: 232
--- Name: Confiability_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: Book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Confiability_id_seq"', 29, true);
+SELECT pg_catalog.setval('public."Book_id_seq"', 18, true);
 
 
 --
 -- TOC entry 3495 (class 0 OID 0)
--- Dependencies: 236
--- Name: Loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Dependencies: 229
+-- Name: Confiability_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Loan_id_seq"', 20, true);
+SELECT pg_catalog.setval('public."Confiability_id_seq"', 35, true);
 
 
 --
 -- TOC entry 3496 (class 0 OID 0)
--- Dependencies: 234
--- Name: Location_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Dependencies: 233
+-- Name: Loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Location_id_seq"', 18, true);
+SELECT pg_catalog.setval('public."Loan_id_seq"', 31, true);
 
 
 --
 -- TOC entry 3497 (class 0 OID 0)
--- Dependencies: 230
+-- Dependencies: 231
+-- Name: Location_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."Location_id_seq"', 21, true);
+
+
+--
+-- TOC entry 3498 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: User_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."User_id_seq"', 20, true);
+SELECT pg_catalog.setval('public."User_id_seq"', 25, true);
 
 
 --
--- TOC entry 3289 (class 2606 OID 25807)
+-- TOC entry 3290 (class 2606 OID 25807)
 -- Name: Address Address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1250,7 +1260,7 @@ ALTER TABLE ONLY public."Address"
 
 
 --
--- TOC entry 3285 (class 2606 OID 25730)
+-- TOC entry 3286 (class 2606 OID 25730)
 -- Name: Author Author_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1259,7 +1269,7 @@ ALTER TABLE ONLY public."Author"
 
 
 --
--- TOC entry 3287 (class 2606 OID 25737)
+-- TOC entry 3288 (class 2606 OID 25737)
 -- Name: Book Book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1268,7 +1278,7 @@ ALTER TABLE ONLY public."Book"
 
 
 --
--- TOC entry 3299 (class 2606 OID 25869)
+-- TOC entry 3300 (class 2606 OID 25869)
 -- Name: Company Company_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1277,7 +1287,7 @@ ALTER TABLE ONLY public."Company"
 
 
 --
--- TOC entry 3293 (class 2606 OID 25838)
+-- TOC entry 3294 (class 2606 OID 25838)
 -- Name: Confiability Confiability_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1286,7 +1296,7 @@ ALTER TABLE ONLY public."Confiability"
 
 
 --
--- TOC entry 3301 (class 2606 OID 25878)
+-- TOC entry 3302 (class 2606 OID 25878)
 -- Name: Employee Employee_cpf_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1295,7 +1305,7 @@ ALTER TABLE ONLY public."Employee"
 
 
 --
--- TOC entry 3303 (class 2606 OID 25876)
+-- TOC entry 3304 (class 2606 OID 25876)
 -- Name: Employee Employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1304,7 +1314,7 @@ ALTER TABLE ONLY public."Employee"
 
 
 --
--- TOC entry 3305 (class 2606 OID 25883)
+-- TOC entry 3306 (class 2606 OID 25883)
 -- Name: Loan Loan_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1313,7 +1323,7 @@ ALTER TABLE ONLY public."Loan"
 
 
 --
--- TOC entry 3283 (class 2606 OID 25713)
+-- TOC entry 3284 (class 2606 OID 25713)
 -- Name: Location Location_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1322,7 +1332,7 @@ ALTER TABLE ONLY public."Location"
 
 
 --
--- TOC entry 3291 (class 2606 OID 25833)
+-- TOC entry 3292 (class 2606 OID 25833)
 -- Name: Seal Seal_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1331,7 +1341,7 @@ ALTER TABLE ONLY public."Seal"
 
 
 --
--- TOC entry 3295 (class 2606 OID 25852)
+-- TOC entry 3296 (class 2606 OID 25852)
 -- Name: User User_cpf_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1340,7 +1350,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 3297 (class 2606 OID 25850)
+-- TOC entry 3298 (class 2606 OID 25850)
 -- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1349,7 +1359,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 3462 (class 2618 OID 26080)
+-- TOC entry 3461 (class 2618 OID 26080)
 -- Name: Book_edit book_update; Type: RULE; Schema: public; Owner: postgres
 --
 
@@ -1364,7 +1374,7 @@ CREATE RULE book_update AS
 
 
 --
--- TOC entry 3307 (class 2606 OID 25743)
+-- TOC entry 3308 (class 2606 OID 25743)
 -- Name: Book Book_author_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1373,7 +1383,7 @@ ALTER TABLE ONLY public."Book"
 
 
 --
--- TOC entry 3306 (class 2606 OID 25738)
+-- TOC entry 3307 (class 2606 OID 25738)
 -- Name: Book Book_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1382,7 +1392,7 @@ ALTER TABLE ONLY public."Book"
 
 
 --
--- TOC entry 3308 (class 2606 OID 25839)
+-- TOC entry 3309 (class 2606 OID 25839)
 -- Name: Confiability Confiability_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1391,7 +1401,7 @@ ALTER TABLE ONLY public."Confiability"
 
 
 --
--- TOC entry 3312 (class 2606 OID 25889)
+-- TOC entry 3313 (class 2606 OID 25889)
 -- Name: Loan Loan_book_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1400,7 +1410,7 @@ ALTER TABLE ONLY public."Loan"
 
 
 --
--- TOC entry 3311 (class 2606 OID 25884)
+-- TOC entry 3312 (class 2606 OID 25884)
 -- Name: Loan Loan_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1409,7 +1419,7 @@ ALTER TABLE ONLY public."Loan"
 
 
 --
--- TOC entry 3309 (class 2606 OID 25853)
+-- TOC entry 3310 (class 2606 OID 25853)
 -- Name: User User_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1418,7 +1428,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 3310 (class 2606 OID 25858)
+-- TOC entry 3311 (class 2606 OID 25858)
 -- Name: User User_confiability_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1426,13 +1436,62 @@ ALTER TABLE ONLY public."User"
     ADD CONSTRAINT "User_confiability_fkey" FOREIGN KEY (confiability) REFERENCES public."Confiability"(id);
 
 
--- Completed on 2022-04-27 12:40:52
+-- Completed on 2022-04-28 14:45:00
 
 --
 -- PostgreSQL database dump complete
 --
 
--- Completed on 2022-04-27 12:40:52
+--
+-- Database "postgres" dump
+--
+
+\connect postgres
+
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.2
+-- Dumped by pg_dump version 14.2
+
+-- Started on 2022-04-28 14:45:00
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2 (class 3079 OID 16384)
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 3304 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
+
+
+-- Completed on 2022-04-28 14:45:00
+
+--
+-- PostgreSQL database dump complete
+--
+
+-- Completed on 2022-04-28 14:45:00
 
 --
 -- PostgreSQL database cluster dump complete

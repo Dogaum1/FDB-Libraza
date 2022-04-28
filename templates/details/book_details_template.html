@@ -1,6 +1,8 @@
 {% extends "base.html" %} 
 
-{% block title %}{{title}}{% endblock %} 
+{% block title %}
+Libraza | {{object['title']}}
+{% endblock %} 
 
 {%block head%}
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,31 +26,7 @@
 {% endblock %} 
 
 {% block modal %}
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Remover {{object['title']}}?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <p>Para confirmar a ação digite o ISBN do livro abaixo.</p>
-                <form id="modal-form" action=" {{ url_for('remove.remove', path = path, id = object['id']) }}" method="POST" class="form">
-                    <div class="input-group mb-3">
-                        <input type="text" name="barcode" class="form-control input_user" value="" placeholder="Codigo de Barras" />
-                    </div>
-                    {% if invalid %}
-                        <p class="text-danger mt-2">Informações inválidas!</p>
-                    {% endif %}
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-danger" value="Submit">Remover</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+    {% include 'modal/delete_action_modal.html' %}
 {% endblock %}
 
 {% block content%}
@@ -62,26 +40,28 @@
                 <img src="{{object['cover']}}" alt="Capa!" class="w-50 mt-3 mb-3" />
             </div>
             <div class="col col-7">
-                <div class="row">
+                <div class="row" style="height: 88%;">
                     <div class="ms-1" style="font-family: 'Oxygen', sans-serif;">
                         <h2 class="mt-3">{{object['title']}}</h2>
                         <h5 class="">{{object['author']}}</h5>
                         <h5 class="mb-3">{{object['year_publication']}} - {{object['genre']}} - {{object['edition']}}ª Edição - {{object['barcode']}}</h5>
-                        <p>{{object['description']}}</p>
+                        <div class="pb-5">
+                            <p>{{object['description']}}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="row mt-5">
-                    <div class="col">
-                        <div class="row h-50 w-100 mt-2">
-                            <div class="col col-3 text-center ms-1">
+                <div class="row">
+                    <div class="col col-7">
+                        <div class="row">
+                            <div class="col col-12 text-start mt-2">
                                 {% if object['available_amount'] > 1 %}
-                                    <p class="text-success">Disponível</p>
+                                    <div class="text-success">
+                                        {{object['available_amount']}} unidades disponíveis
+                                        <p class="text-dark ms-2" style="display: inline;">Estante: {{object['stand']}} Prateleira: {{object['shelf']}}</p>
+                                    </div>
                                 {% else %}
-                                <p class="text-danger ">Indisponível</p>
+                                <p class="text-danger">Indisponível</p>
                                 {% endif %}
-                            </div>
-                            <div class="col col-8 text-center ms-1">
-                                <p>Estante: {{object['stand']}} Prateleira: {{object['shelf']}}</p>
                             </div>
                         </div>
                     </div>

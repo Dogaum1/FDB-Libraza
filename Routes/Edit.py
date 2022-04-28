@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, abort, redirect, url_for
+from flask import Blueprint, request, session, abort, redirect, url_for, jsonify
 from Util.Template import *
 from Util.Attributes import *
 
@@ -52,7 +52,7 @@ def modify(path):
 
 
 @edit_core.route("/loan/<int:id>/return", methods=["GET", "POST"])
-def return_(id):
+def loanReturn(id):
     if not session.get("user"):
         return abort(403)
     
@@ -60,3 +60,19 @@ def return_(id):
     script = f""" SELECT loan_return({id})  """
     dao.execute(script, commit=True)
     return redirect(url_for("show.getOne", path="loan", id=id))
+
+@edit_core.route("/loan/<int:id>/renew", methods=["GET", "POST"])
+def loanRenew(id):
+    if not session.get("user"):
+        return abort(403)
+    
+    dao = getDao("loan")
+    script = f""" SELECT loan_renew_validate({id})  """
+    valid = dao.execute(script, get_object = True)
+    valid = list(valid.values())[0]
+    print("==>> valid: ", valid)
+    
+    if not valid:
+        return jsonify({"title": "Erro", "subtitle": "A renovação só poderá ser solicitada a partir de 2 dias antes do vencimento!", "msg": "", "status": 0})
+    # return redirect(url_for("show.getOne", path="loan", id=id))
+    return jsonify({"status": 1})

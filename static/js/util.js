@@ -16,7 +16,13 @@ $(document).ready(function(){
     // loan auto complete
     $('#cpf_input').keyup(function(){load_data();});
     $('#barcode_input').keyup(function(){load_data();});
-    $('#return_button').click(function(){$('#return_modal').modal('show')});
+
+    $(document).keypress(
+      function(event){
+        if (event.which == '13') {
+          event.preventDefault();
+        }
+    });
 
   });
   
