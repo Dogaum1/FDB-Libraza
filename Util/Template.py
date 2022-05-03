@@ -1,7 +1,8 @@
-from flask import render_template, session
+from flask import render_template, session, abort
 from Module.DaoModules import *
 from .Translate import *
 from .Attributes import *
+
 
 
 def getDao(path):
@@ -32,6 +33,9 @@ def mountScript(form_keys, request, script):
     
     return script
 
+def verifySession():
+    if not session.get("user"):
+        return abort(403)
 
 def renderForm(
     dao,
@@ -105,7 +109,7 @@ def renderList(dao):
     )
 
 
-def renderDetails(dao, id, mode=None, invalid=False):
+def renderDetails(dao, id, mode=None):
     object = dao.getOne(id=id, mode=mode)
 
     if dao.table_name == "User":
@@ -118,7 +122,6 @@ def renderDetails(dao, id, mode=None, invalid=False):
         title=Translate().translate(dao.table_name).title(),
         path=dao.table_name.lower(),
         username=session.get("user"),
-        invalid=invalid,
     )
 
 

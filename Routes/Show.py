@@ -21,7 +21,6 @@ def getOne(path, id):
         return abort(404)
     
     if not path == "book":
-        if not session.get("user"):
-            return abort(403)
+        verifySession()
         
     return renderDetails(dao=dao, id=id, mode="detail")

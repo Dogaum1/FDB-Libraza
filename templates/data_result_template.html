@@ -7,7 +7,7 @@
     </div>
     <div class="text-center mt-5">
         <div class="row justify-content-center">
-            <table class="table">
+            <table class="table w-75">
                 {% if update %}
                 <tr>
                     <th>Dado</th>
@@ -17,7 +17,7 @@
                     {% for k in keys %} 
                         {% if after_object[k] != object[k] %}
                             <tr>
-                                <td>{{keys_br[keys.index(k)]}}</td>
+                                <td class="me-4">{{keys_br[keys.index(k)]}}</td>
                                 <td>{{object[k]}}</td>
                                 <td class="text-success">{{after_object[k]}}</td>
                             </tr>

@@ -2,7 +2,7 @@
 -- PostgreSQL database cluster dump
 --
 
--- Started on 2022-04-28 14:44:59
+-- Started on 2022-05-03 08:48:54
 
 SET default_transaction_read_only = off;
 
@@ -38,7 +38,7 @@ ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION
 -- Dumped from database version 14.2
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-04-28 14:44:59
+-- Started on 2022-05-03 08:48:54
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -51,7 +51,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Completed on 2022-04-28 14:45:00
+-- Completed on 2022-05-03 08:48:54
 
 --
 -- PostgreSQL database dump complete
@@ -68,7 +68,7 @@ SET row_security = off;
 -- Dumped from database version 14.2
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-04-28 14:45:00
+-- Started on 2022-05-03 08:48:54
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -82,7 +82,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 3491 (class 1262 OID 25618)
+-- TOC entry 3492 (class 1262 OID 25618)
 -- Name: libraza_database; Type: DATABASE; Schema: -; Owner: postgres
 --
 
@@ -228,6 +228,38 @@ $$;
 
 
 ALTER FUNCTION public.loan_insert(in_cpf character, in_user character, in_barcode character, in_book character) OWNER TO postgres;
+
+--
+-- TOC entry 263 (class 1255 OID 26295)
+-- Name: loan_renew(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.loan_renew(in_loan_id integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+ 	user_id integer;
+	loan_return_period date;
+	new_loan_return_period date;
+	user_confiability_label text;
+BEGIN
+	SELECT user, return_period FROM "Loan" WHERE id = in_loan_id into user_id, loan_return_period;
+
+	SELECT "Confiability".label FROM "User" 
+    LEFT JOIN "Confiability" ON "User".confiability = "Confiability".id
+    WHERE "User".id = user_id INTO user_confiability_label;
+	
+	IF user_confiability_label = 1 THEN new_loan_return_period = loan_return_period + 7; END IF;
+	IF user_confiability_label = 2 THEN new_loan_return_period = loan_return_period + 10; END IF;
+	IF user_confiability_label = 3 THEN new_loan_return_period = loan_return_period + 14; END IF;
+	
+	UPDATE "LOan" SET return_period = new_loan_return_period WHERE id = in_loan_id;
+	
+END
+$$;
+
+
+ALTER FUNCTION public.loan_renew(in_loan_id integer) OWNER TO postgres;
 
 --
 -- TOC entry 257 (class 1255 OID 26294)
@@ -1046,48 +1078,46 @@ CREATE VIEW public."User_search" AS
 ALTER TABLE public."User_search" OWNER TO postgres;
 
 --
--- TOC entry 3472 (class 0 OID 25801)
+-- TOC entry 3473 (class 0 OID 25801)
 -- Dependencies: 212
 -- Data for Name: Address; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Address" (id, type, logradouro, number, district, city, state, zip_code) FROM stdin;
-35	Avenida	Transcontinental	261	Santiago	Ji-Paraná	RO	76901-201
-36	Rua	José dos Santos Chaves	198	Brasilar	Teresina	PI	64035-445
 37	Praça	Nilson Jaime	145	Vila Abajá	Goiânia	GO	74550-510
 38	Quadra	SHIGS 712 Bloco H	737	Asa Sul	Brasília	DF	70361-758
-39	Vila	Cosme de Farias	908	Cosme de Farias	Salvador	BA	40254-200
+40	Rua	D	996	Setor Ana Maria	Araguaína	TO	77828-352
+39	Vila	Cosme de Farias	90	Cosme de Farias	Salvador	BA	40254-200
+36	Rua	José dos Santos Chaves	198	Brasilar	Teresina	PI	64035-445
 \.
 
 
 --
--- TOC entry 3470 (class 0 OID 25726)
+-- TOC entry 3471 (class 0 OID 25726)
 -- Dependencies: 210
 -- Data for Name: Author; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Author" (id, name) FROM stdin;
-19	Sun Tzu
 20	Inio Asano
-21	 Tito Leite
+22	 José Saramago
 \.
 
 
 --
--- TOC entry 3471 (class 0 OID 25731)
+-- TOC entry 3472 (class 0 OID 25731)
 -- Dependencies: 211
 -- Data for Name: Book; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Book" (id, title, author, edition, publisher, year_publication, num_pages, barcode, genre, location, cover, description, amount, available_amount) FROM stdin;
-16	A Arte da Guerra	19	1	Jardim dos Livros	2017	128	8581303897	Ação	19	https://m.media-amazon.com/images/P/B00BBFSD3O.01._SCLZZZZZZZ_SX500_.jpg	O maior tratado de guerra de todos os tempos em sua versão completa em português. “A Arte da Guerra” é sem dúvida a Bíblia da estratégia, sendo hoje utilizada amplamente no mundo dos negócios, conquistando pessoas e mercados.	5	4
-18	Dilúvio das almas	21	1	Todavia	2022	112	6556922552	 Ficção	21	https://m.media-amazon.com/images/P/B09S6X7CRZ.01._SCLZZZZZZZ_SX500_.jpg	Leonardo volta ao Nordeste, a Dilúvio das Almas, sua cidade natal, depois de muitos anos vivendo de todas as formas em São Paulo. Mas o retorno ao sertão semiárido está longe de ser idílico: a violência e a ignorância que o fizeram migrar continuam ali. Escrito num tom por vezes filosófico e desencantado, que contrasta com o extremo realismo das cenas e a secura dos diálogos, este é um romance potente sobre como pode ser difícil reinventar o próprio passado.	10	8
-17	Boa Noite Punpun	20	1	Editora JBC	2022	432	8545709617	Infantil	20	https://m.media-amazon.com/images/P/B07VCMP6Y1.01._SCLZZZZZZZ_SX500_.jpg	Punpun Onodera é um garoto normal, que vive feliz com sua família. Um dia, Aiko Tanaka é transferida para a sua escola. Foi paixão à primeira vista!! Voltando juntos para casa, ela conta que no futuro, “a Terra vai se tornar um planeta inabitável”.	7	5
+19	A Jangada de Pedra	22	1	Companhia de Bolso	2006	296	8535908064	Romance	22	https://m.media-amazon.com/images/P/B009WW4ULC.01._SCLZZZZZZZ_SX500_.jpg	Racham os Pirineus, a Península Ibérica se desgarra da Europa. Transformada em ilha - Jangada de Pedra -, navega à deriva pelo oceano Atlântico.A esse espetacular acidente geológico somam-se outros insólitos que unem os quatro personagens principais do romance numa viagem apocalíptica e utópica pelos caminhos da linguagem e, por meio dela, pelos da arte e da cultura peninsulares.	15	13
+17	Boa Noite Punpun	20	1	Editora JBC	2022	432	8545709617	Infantil	20	https://m.media-amazon.com/images/P/B07VCMP6Y1.01._SCLZZZZZZZ_SX500_.jpg	Punpun Onodera é um garoto normal, que vive feliz com sua família. Um dia, Aiko Tanaka é transferida para a sua escola. Foi paixão à primeira vista!! Voltando juntos para casa, ela conta que no futuro, “a Terra vai se tornar um planeta inabitável”.	7	7
 \.
 
 
 --
--- TOC entry 3476 (class 0 OID 25863)
+-- TOC entry 3477 (class 0 OID 25863)
 -- Dependencies: 216
 -- Data for Name: Company; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1097,22 +1127,22 @@ COPY public."Company" (id, name, cnpj) FROM stdin;
 
 
 --
--- TOC entry 3474 (class 0 OID 25834)
+-- TOC entry 3475 (class 0 OID 25834)
 -- Dependencies: 214
 -- Data for Name: Confiability; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Confiability" (id, label, amt_allowed_books, amt_borrowed_books, points) FROM stdin;
-33	2	3	2	25
-31	1	2	0	5
-32	1	2	0	5
+32	2	3	-3	35
 35	1	2	0	5
 34	1	2	0	5
+36	1	2	1	5
+33	3	5	-6	70
 \.
 
 
 --
--- TOC entry 3477 (class 0 OID 25870)
+-- TOC entry 3478 (class 0 OID 25870)
 -- Dependencies: 217
 -- Data for Name: Employee; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1126,41 +1156,34 @@ COPY public."Employee" (id, name, cpf, phone, email, birth_date, registration, p
 
 
 --
--- TOC entry 3478 (class 0 OID 25879)
+-- TOC entry 3479 (class 0 OID 25879)
 -- Dependencies: 218
 -- Data for Name: Loan; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Loan" (id, "user", book, start_date, return_period, return_date) FROM stdin;
-21	21	16	2022-04-27	2022-05-02	2022-04-27
-26	23	16	2022-04-28	2022-05-05	2022-04-28
-22	22	16	2022-04-27	2022-05-10	2022-04-28
 23	23	17	2022-04-28	2022-05-05	2022-04-28
-24	25	16	2022-04-28	2022-05-05	2022-04-28
-25	24	16	2022-04-28	2022-05-05	2022-04-28
-27	23	16	2022-04-28	2022-05-05	2022-04-28
 28	23	17	2022-04-28	2022-05-05	2022-04-28
-29	23	16	2022-04-28	2022-05-08	2022-04-28
-30	23	18	2022-04-28	2022-04-30	\N
-31	23	17	2022-04-28	2022-05-08	\N
+31	23	17	2022-04-28	2022-05-08	2022-04-29
+36	26	19	2022-05-02	2022-05-09	\N
+37	23	17	2022-05-02	2022-05-16	2022-05-02
 \.
 
 
 --
--- TOC entry 3469 (class 0 OID 25709)
+-- TOC entry 3470 (class 0 OID 25709)
 -- Dependencies: 209
 -- Data for Name: Location; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."Location" (id, stand, shelf) FROM stdin;
-19	1	3
 20	2	3
-21	5	4
+22	6	5
 \.
 
 
 --
--- TOC entry 3473 (class 0 OID 25827)
+-- TOC entry 3474 (class 0 OID 25827)
 -- Dependencies: 213
 -- Data for Name: Seal; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1173,85 +1196,85 @@ COPY public."Seal" (id, label) FROM stdin;
 
 
 --
--- TOC entry 3475 (class 0 OID 25844)
+-- TOC entry 3476 (class 0 OID 25844)
 -- Dependencies: 215
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public."User" (id, name, cpf, phone, address, email, birth_date, confiability) FROM stdin;
-21	Joaquim Hugo Alves	374.233.706-81	(69) 9 9497-1862	35	joaquim_alves@renatoseguros.com	1963-03-16	31
-22	Thiago José Nascimento	767.044.274-30	(86) 9 8507-2092	36	thiago.jose.nascimento@gruposimoes.com.br	1980-01-06	32
 23	Carolina Flávia Melo	433.883.631-88	(62) 9 9739-0752	37	carolinaflaviamelo@artedaserra.com.br	1948-02-11	33
 24	Sophia Lavínia Aragão	218.444.189-95	(61) 9 8831-7355	38	sophia-aragao99@diclace.com.br	2000-01-07	34
+26	Vinicius Diogo Marcelo Almeida	920.253.568-03	(63) 9 9895-6681	40	viniciusdiogoalmeida@vuyu.es	1998-03-04	36
 25	Rafael Kauê Danilo da Luz	151.349.558-59	(71) 9 8961-6815	39	rafael_daluz@bemdito.com.br	1999-01-11	35
+22	Thiago José Nascimento	767.044.274-31	\N	36	thiago.jose.nascimento@gruposimoes.com.br	1980-01-06	32
 \.
 
 
 --
--- TOC entry 3492 (class 0 OID 0)
+-- TOC entry 3493 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: Address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Address_id_seq"', 39, true);
-
-
---
--- TOC entry 3493 (class 0 OID 0)
--- Dependencies: 230
--- Name: Author_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public."Author_id_seq"', 21, true);
+SELECT pg_catalog.setval('public."Address_id_seq"', 40, true);
 
 
 --
 -- TOC entry 3494 (class 0 OID 0)
--- Dependencies: 232
--- Name: Book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Dependencies: 230
+-- Name: Author_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Book_id_seq"', 18, true);
+SELECT pg_catalog.setval('public."Author_id_seq"', 22, true);
 
 
 --
 -- TOC entry 3495 (class 0 OID 0)
--- Dependencies: 229
--- Name: Confiability_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Dependencies: 232
+-- Name: Book_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Confiability_id_seq"', 35, true);
+SELECT pg_catalog.setval('public."Book_id_seq"', 19, true);
 
 
 --
 -- TOC entry 3496 (class 0 OID 0)
--- Dependencies: 233
--- Name: Loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Dependencies: 229
+-- Name: Confiability_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Loan_id_seq"', 31, true);
+SELECT pg_catalog.setval('public."Confiability_id_seq"', 36, true);
 
 
 --
 -- TOC entry 3497 (class 0 OID 0)
--- Dependencies: 231
--- Name: Location_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Dependencies: 233
+-- Name: Loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Location_id_seq"', 21, true);
+SELECT pg_catalog.setval('public."Loan_id_seq"', 37, true);
 
 
 --
 -- TOC entry 3498 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: Location_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."Location_id_seq"', 22, true);
+
+
+--
+-- TOC entry 3499 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: User_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."User_id_seq"', 25, true);
+SELECT pg_catalog.setval('public."User_id_seq"', 26, true);
 
 
 --
--- TOC entry 3290 (class 2606 OID 25807)
+-- TOC entry 3291 (class 2606 OID 25807)
 -- Name: Address Address_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1260,7 +1283,7 @@ ALTER TABLE ONLY public."Address"
 
 
 --
--- TOC entry 3286 (class 2606 OID 25730)
+-- TOC entry 3287 (class 2606 OID 25730)
 -- Name: Author Author_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1269,7 +1292,7 @@ ALTER TABLE ONLY public."Author"
 
 
 --
--- TOC entry 3288 (class 2606 OID 25737)
+-- TOC entry 3289 (class 2606 OID 25737)
 -- Name: Book Book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1278,7 +1301,7 @@ ALTER TABLE ONLY public."Book"
 
 
 --
--- TOC entry 3300 (class 2606 OID 25869)
+-- TOC entry 3301 (class 2606 OID 25869)
 -- Name: Company Company_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1287,7 +1310,7 @@ ALTER TABLE ONLY public."Company"
 
 
 --
--- TOC entry 3294 (class 2606 OID 25838)
+-- TOC entry 3295 (class 2606 OID 25838)
 -- Name: Confiability Confiability_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1296,7 +1319,7 @@ ALTER TABLE ONLY public."Confiability"
 
 
 --
--- TOC entry 3302 (class 2606 OID 25878)
+-- TOC entry 3303 (class 2606 OID 25878)
 -- Name: Employee Employee_cpf_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1305,7 +1328,7 @@ ALTER TABLE ONLY public."Employee"
 
 
 --
--- TOC entry 3304 (class 2606 OID 25876)
+-- TOC entry 3305 (class 2606 OID 25876)
 -- Name: Employee Employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1314,7 +1337,7 @@ ALTER TABLE ONLY public."Employee"
 
 
 --
--- TOC entry 3306 (class 2606 OID 25883)
+-- TOC entry 3307 (class 2606 OID 25883)
 -- Name: Loan Loan_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1323,7 +1346,7 @@ ALTER TABLE ONLY public."Loan"
 
 
 --
--- TOC entry 3284 (class 2606 OID 25713)
+-- TOC entry 3285 (class 2606 OID 25713)
 -- Name: Location Location_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1332,7 +1355,7 @@ ALTER TABLE ONLY public."Location"
 
 
 --
--- TOC entry 3292 (class 2606 OID 25833)
+-- TOC entry 3293 (class 2606 OID 25833)
 -- Name: Seal Seal_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1341,7 +1364,7 @@ ALTER TABLE ONLY public."Seal"
 
 
 --
--- TOC entry 3296 (class 2606 OID 25852)
+-- TOC entry 3297 (class 2606 OID 25852)
 -- Name: User User_cpf_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1350,7 +1373,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 3298 (class 2606 OID 25850)
+-- TOC entry 3299 (class 2606 OID 25850)
 -- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1359,7 +1382,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 3461 (class 2618 OID 26080)
+-- TOC entry 3462 (class 2618 OID 26080)
 -- Name: Book_edit book_update; Type: RULE; Schema: public; Owner: postgres
 --
 
@@ -1374,7 +1397,7 @@ CREATE RULE book_update AS
 
 
 --
--- TOC entry 3308 (class 2606 OID 25743)
+-- TOC entry 3309 (class 2606 OID 25743)
 -- Name: Book Book_author_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1383,7 +1406,7 @@ ALTER TABLE ONLY public."Book"
 
 
 --
--- TOC entry 3307 (class 2606 OID 25738)
+-- TOC entry 3308 (class 2606 OID 25738)
 -- Name: Book Book_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1392,7 +1415,7 @@ ALTER TABLE ONLY public."Book"
 
 
 --
--- TOC entry 3309 (class 2606 OID 25839)
+-- TOC entry 3310 (class 2606 OID 25839)
 -- Name: Confiability Confiability_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1401,25 +1424,25 @@ ALTER TABLE ONLY public."Confiability"
 
 
 --
--- TOC entry 3313 (class 2606 OID 25889)
+-- TOC entry 3313 (class 2606 OID 26296)
 -- Name: Loan Loan_book_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Loan"
-    ADD CONSTRAINT "Loan_book_fkey" FOREIGN KEY (book) REFERENCES public."Book"(id);
+    ADD CONSTRAINT "Loan_book_fkey" FOREIGN KEY (book) REFERENCES public."Book"(id) ON DELETE CASCADE;
 
 
 --
--- TOC entry 3312 (class 2606 OID 25884)
+-- TOC entry 3314 (class 2606 OID 26306)
 -- Name: Loan Loan_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public."Loan"
-    ADD CONSTRAINT "Loan_user_fkey" FOREIGN KEY ("user") REFERENCES public."User"(id);
+    ADD CONSTRAINT "Loan_user_fkey" FOREIGN KEY ("user") REFERENCES public."User"(id) ON DELETE CASCADE;
 
 
 --
--- TOC entry 3310 (class 2606 OID 25853)
+-- TOC entry 3311 (class 2606 OID 25853)
 -- Name: User User_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1428,7 +1451,7 @@ ALTER TABLE ONLY public."User"
 
 
 --
--- TOC entry 3311 (class 2606 OID 25858)
+-- TOC entry 3312 (class 2606 OID 25858)
 -- Name: User User_confiability_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1436,7 +1459,7 @@ ALTER TABLE ONLY public."User"
     ADD CONSTRAINT "User_confiability_fkey" FOREIGN KEY (confiability) REFERENCES public."Confiability"(id);
 
 
--- Completed on 2022-04-28 14:45:00
+-- Completed on 2022-05-03 08:48:55
 
 --
 -- PostgreSQL database dump complete
@@ -1455,7 +1478,7 @@ ALTER TABLE ONLY public."User"
 -- Dumped from database version 14.2
 -- Dumped by pg_dump version 14.2
 
--- Started on 2022-04-28 14:45:00
+-- Started on 2022-05-03 08:48:55
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1485,13 +1508,13 @@ CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
 
 
--- Completed on 2022-04-28 14:45:00
+-- Completed on 2022-05-03 08:48:55
 
 --
 -- PostgreSQL database dump complete
 --
 
--- Completed on 2022-04-28 14:45:00
+-- Completed on 2022-05-03 08:48:55
 
 --
 -- PostgreSQL database cluster dump complete

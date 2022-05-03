@@ -7,8 +7,7 @@ add_core = Blueprint("add", __name__, url_prefix="/add")
 
 @add_core.route("/loan", methods=["GET", "POST"])
 def addLoan():
-    if not session.get("user"):
-        return abort(403)
+    verifySession()
       
     dao = getDao("loan")
 
@@ -41,8 +40,7 @@ def addLoan():
 
 @add_core.route("/<path:path>", methods=["GET", "POST"])
 def add(path):
-    if not session.get("user"):
-        return abort(403)
+    verifySession()
       
     dao = getDao(path)
     if not dao or path in forbidden:
@@ -59,8 +57,7 @@ def add(path):
 @add_core.route("insert/<path:path>", methods=["GET", "POST"])
 def insert(path):
     
-    if not session.get("user"):
-        return abort(403)
+    verifySession()
     
     if request.method == "POST":
         dao = getDao(path)

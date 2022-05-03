@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Secular+One&display=swap" rel="stylesheet">
-<script src="{{ url_for('static', filename='js/verify.js') }}"></script>
 {%endblock%}
 
 {% block alert %}
@@ -83,6 +82,6 @@
 {% endblock %}
 
 {% block secret %}
-<div id="url">/verify/{{mode}}/{{path|lower}}/{{id}}</div>
+<div id="url">/verify/{{mode}}/{{path|lower}}/{{values[0]}}</div>
 <div id="method">{{method}}</div>
 {% endblock %}

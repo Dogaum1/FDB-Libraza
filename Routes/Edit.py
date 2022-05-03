@@ -25,8 +25,7 @@ def edit(path, id):
 
 @edit_core.route("/modify/<path:path>/", methods=["GET", "POST"])
 def modify(path):
-    if not session.get("user"):
-        return abort(403)
+    verifySession()
     
     if request.method == "POST":
         dao = getDao(path)
@@ -53,26 +52,19 @@ def modify(path):
 
 @edit_core.route("/loan/<int:id>/return", methods=["GET", "POST"])
 def loanReturn(id):
-    if not session.get("user"):
-        return abort(403)
+    verifySession()
     
     dao = getDao("loan")
     script = f""" SELECT loan_return({id})  """
     dao.execute(script, commit=True)
-    return redirect(url_for("show.getOne", path="loan", id=id))
+    return redirect(url_for("show.getOne", path="loan", id=id) )
 
 @edit_core.route("/loan/<int:id>/renew", methods=["GET", "POST"])
 def loanRenew(id):
-    if not session.get("user"):
-        return abort(403)
+    verifySession()
     
     dao = getDao("loan")
-    script = f""" SELECT loan_renew_validate({id})  """
-    valid = dao.execute(script, get_object = True)
-    valid = list(valid.values())[0]
-    print("==>> valid: ", valid)
+    script = f""" SELECT loan_renew({id})  """
+    dao.execute(script, commit=True)
     
-    if not valid:
-        return jsonify({"title": "Erro", "subtitle": "A renovação só poderá ser solicitada a partir de 2 dias antes do vencimento!", "msg": "", "status": 0})
-    # return redirect(url_for("show.getOne", path="loan", id=id))
-    return jsonify({"status": 1})
+    return redirect(url_for("show.getOne", path="loan", id=id))

@@ -9,21 +9,10 @@ Libraza | {{object['name']}}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 <link href="{{url_for('static', filename='css/user_style.css')}}" rel="stylesheet"> 
-<script>
-    function invalidModal(){
-        document.getElementById('remove-button').click()
-    }
-</script>
-{% endblock %}
-
-{% block body_modify %}
-    {% if invalid %}
-        onload = "invalidModal()"
-    {% endif %}
 {% endblock %}
 
 {% block modal %}   
-    {% include 'modal/delete_action_modal.html' %}
+    {% include 'modal/remove_action_modal.html' %}
 {% endblock %}
 
 {% block content%}
@@ -102,4 +91,9 @@ Libraza | {{object['name']}}
     </div>
     </div>
 </div>
+{% endblock %}
+
+{% block secret %}
+<div id="url">/verify/remove/{{path|lower}}/{{object['id']}}</div>
+<div id="method">POST</div>
 {% endblock %}

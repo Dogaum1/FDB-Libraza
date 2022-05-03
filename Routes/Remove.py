@@ -6,8 +6,7 @@ remove_core = Blueprint("remove", __name__, url_prefix="/remove")
 
 @remove_core.route("/<path:path>/<int:id>/", methods=["GET", "POST"])
 def remove(path, id):
-    if not session.get("user"):
-        return abort(403)
+    verifySession()
     
     if request.method == "POST":
         dao = getDao(path)
@@ -39,4 +38,4 @@ def remove(path, id):
                         "removido",
                     )
 
-            return renderDetails(dao=dao, id=id, mode="detail", invalid=True)
+            return renderDetails(dao=dao, id=id, mode="detail")

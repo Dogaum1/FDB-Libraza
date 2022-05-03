@@ -13,7 +13,24 @@
 <div>
     <h2 class="text-center mt-3 mb-4">{{title|upper}}</h2>
 </div>
-<div class="row ms-3 col-lg-11 justify-content-center" style="margin-top: -2%;">
+
+    <!-- <div class="row justify-content-center">
+        <div class="col col-3">
+            <select id="confiability_select" class="form-select" aria-label="Default select example">
+                <option selected value="0">Todos</option>
+                <option value="1">Bronze</option>
+                <option value="2">Prata</option>
+                <option value="3">Ouro</option>
+            </select>
+        </div>
+        <div class="col col-5">
+            <div class="input-group">
+                <input type="text" class="form-control" aria-label="Text input with dropdown button">
+            </div>
+        </div> -->
+    </div>
+
+<div class="row ms-3 mt-2 col-lg-11 justify-content-center" style="margin-top: -2%;">
     {% for object in objects %}
         {% if object['confiability'] == 'Bronze' %}
             <div class="col col-md-2 text-center rounded rounded-lg bronze-card-bg animation ms-5 text-shadow p-3 card-shadow list-card mt-5">

@@ -1,0 +1,35 @@
+
+
+{% if path == 'book'%}
+    {% set msg = 'Para confirmar a ação digite o ISBN do livro abaixo' %}
+    {% set name, placeholder, id = 'barcode', 'Código de barras', 'barcode_input' %}
+
+{% elif path == 'user'%}
+    {% set msg = "Para remover " + object['name'] + " digite o CPF do mesmo abaixo." %}
+    {% set name, placeholder, id = 'cpf', 'CPF', 'cpf_input' %}
+
+{% endif %}
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Remover?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>{{msg}}</p>
+                <form id="myform" action=" {{ url_for('remove.remove', path = path, id = object['id']) }}" method="POST" class="form">
+                    <div class="input-group mb-3">
+                        <input type="text" id="{{id}}" name="{{name}}" class="form-control" value="" placeholder="{{placeholder}}" autocomplete="off" />
+                    </div>
+                    <p id="remove-erro-msg" class="text-danger mt-2"></p>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="button" id="verify_button" class="btn btn-danger" disabled="disabled">Remover</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

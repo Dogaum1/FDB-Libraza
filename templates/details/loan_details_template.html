@@ -88,8 +88,9 @@ Librazza | {{title}} {{object['id']}}
 {% endblock %}
 
 {% block secret %}
-<div id="form-return-url-for">{{url_for('edit.loanReturn', path = path, id = object['id'])}}</div>
-<div id="form-renew-url-for">{{url_for('edit.loanRenew', path = path, id = object['id'])}}</div>
-<div id="url">{{url_for('edit.loanRenew', path = path, id = object['id'])}}</div>
+<div id="form-return-url">{{url_for('edit.loanReturn', path = path, id = object['id'])}}</div>
+<div id="form-renew-url">{{url_for('edit.loanRenew', path = path, id = object['id'])}}</div>
+<div id="verify-renew-url">{{url_for('verify.verifyLoanRenew', path = path, id = object['id'])}}</div>
+<div id="verify-return-url">{{url_for('verify.verifyLoanReturn', path = path, id = object['id'])}}</div>
 <div id="method">POST</div>
 {% endblock %}
